@@ -1,8 +1,8 @@
 #!/bin/bash
 
-## Create basic desktop entries
+## Create shell desktop entry
 
-# Create desktop directory
+# Create desktop directory if not existent
 mkdir -p /home/laboratory/Desktop
 cd /home/laboratory/Desktop
 

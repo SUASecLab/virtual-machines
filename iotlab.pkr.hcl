@@ -88,9 +88,10 @@ build {
       "scripts/startmenu.sh",
 
       # Create desktop entries
-      "scripts/desktops/desktop-basic.sh",
       "scripts/desktops/desktop-contiki.sh",
-      "scripts/desktops/desktop-network.sh",
+      "scripts/desktops/desktop-exercises.sh",
+      "scripts/desktops/desktop-filezilla.sh",
+      "scripts/desktops/desktop-shell.sh",
 
       # Fix permissions (must be called last)
       "scripts/permissions.sh"

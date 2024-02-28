@@ -6,10 +6,10 @@ variable "ssh_password" {
 # Some sources:
 # https://github.com/multani/packer-qemu-debian/tree/master
 
-source "qemu" "heaven-exam" {
-  iso_url          = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.5.0-amd64-netinst.iso"
-  iso_checksum     = "013f5b44670d81280b5b1bc02455842b250df2f0c6763398feb69af1a805a14f"
-  output_directory = "build-heaven-exam"
+source "qemu" "kali" {
+  iso_url          = "https://cdimage.kali.org/kali-2023.4/kali-linux-2023.4-installer-amd64.iso"
+  iso_checksum     = "49f6826e302659378ff0b18eda28121dad7eeab4da3b8d171df034da4996a75e"
+  output_directory = "build-kali"
   shutdown_command = "echo '${var.ssh_password}'  | sudo -S /sbin/shutdown -hP now"
   disk_size        = "40G"
   format           = "qcow2"
@@ -21,20 +21,20 @@ source "qemu" "heaven-exam" {
   http_port_max    = "9010"
   ssh_username     = "laboratory"
   ssh_password     = "${var.ssh_password}"
-  ssh_timeout      = "20m"
+  ssh_timeout      = "30m"
   host_port_min    = "2000"
   host_port_max    = "2010"
-  vm_name          = "heaven_exam.qcow2"
+  vm_name          = "kali_base.qcow2"
   net_device       = "virtio-net"
   disk_interface   = "virtio"
   boot_wait        = "5s"
   headless         = "false"
   boot_command = [
     "<down><tab>",
-    "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/debian-preseed.cfg ",
+    "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/kali-preseed.cfg ",
     "language=en locale=de_DE.UTF-8 ",
     "country=DE keymap=de ",
-    "hostname=debian domain=example.com ",
+    "hostname=laboratory domain=example.com ",
   "<enter><wait>"]
 }
 
@@ -42,27 +42,13 @@ source "qemu" "heaven-exam" {
 # https://askubuntu.com/questions/1309029/qemu-display-gtk-and-display-sdl-not-available-ubuntu-20-04-1-lts
 
 build {
-  sources = ["source.qemu.heaven-exam"]
+  sources = ["source.qemu.kali"]
 
   ## Copy files
-
-  # Programs
-  provisioner "file" {
-    sources = [
-      "dependencies/openjdk-17+35_linux-x64_bin.tar.gz"
-    ]
-    destination = "/tmp/"
-  }
 
   # Configuration file for autologin
   provisioner "file" {
     source      = "files/lightdm.conf"
-    destination = "/tmp/"
-  }
-
-  # Configuration file for autologin
-  provisioner "file" {
-    source      = "files/pushExam.sh"
     destination = "/tmp/"
   }
 
@@ -74,30 +60,19 @@ build {
     ]
   }
 
-  # Install and set up development environments
+  # Set up system
   provisioner "shell" {
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
     scripts = [
-      # Install programs first
-      "scripts/programs/programs-basic.sh",
-      "scripts/programs/cc-amd64.sh",
-      "scripts/programs/geany.sh",
-      "scripts/programs/java-17.sh",
-      "scripts/programs/python.sh",
-      "scripts/programs/raid.sh",
-      "scripts/programs/exam.sh",
-
       # Set up main system
       "scripts/autostart.sh",
-      "scripts/startmenu.sh",
+      "scripts/fs_share.sh",
+
+      # Setup kali environment
+      "scripts/environments/kali.sh",
 
       # Create desktop entries
-      "scripts/desktops/desktop-heaven-base.sh",
-      "scripts/desktops/desktop-heaven-extended.sh",
-      "scripts/desktops/desktop-shell.sh",
-
-      # Finalise
-      "scripts/environments/exam.sh",
+      "scripts/desktops/desktop-exercises.sh",
 
       # Fix permissions (must be called last)
       "scripts/permissions.sh"
