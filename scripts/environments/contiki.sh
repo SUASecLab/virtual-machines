@@ -65,6 +65,8 @@ ant run
 read a
 EOF
 
+chmod a+x /home/laboratory/run_cooja.sh
+
 # Set up video stream
 apt-get install ffmpeg -y
 
@@ -74,6 +76,8 @@ cat >>/home/laboratory/show_remote.sh <<EOF
 timeout 120 ffplay -f video4linux2 -framerate 20 -video_size 858x480 /dev/video0
 read a
 EOF
+
+chmod a+x /home/laboratory/show_remote.sh
 
 # Allow laboratory user to run Contiki development and debugging tools
 cat >>/etc/sudoers.d/contiki <<EOF
