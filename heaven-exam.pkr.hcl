@@ -93,7 +93,6 @@ build {
 
       # Create desktop entries
       "scripts/desktops/desktop-heaven-base.sh",
-      "scripts/desktops/desktop-heaven-extended.sh",
       "scripts/desktops/desktop-shell.sh",
 
       # Finalise

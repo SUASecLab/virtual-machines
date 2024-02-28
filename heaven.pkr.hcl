@@ -94,6 +94,7 @@ build {
       "scripts/desktops/desktop-exercises.sh",
       "scripts/desktops/desktop-filezilla.sh",
       "scripts/desktops/desktop-heaven-base.sh",
+      "scripts/desktops/desktop-heaven-extended.sh",
       "scripts/desktops/desktop-shell.sh",
 
       # Fix permissions (must be called last)
