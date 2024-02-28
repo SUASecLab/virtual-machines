@@ -1,6 +1,10 @@
 # VM images
 build-heaven
+build-heaven-exam
 build-iotlab
 
 # Downloaded dependency files
 dependencies
+
+# Script to push exams to the university's fileserver
+files/pushExam.sh

@@ -10,8 +10,6 @@ apt-get update
 apt-get upgrade -y
 
 # Install programs
-apt-get install filezilla -y
-apt-get install git git-lfs -y
 apt-get install network-manager network-manager-gnome -y
 
 # Uninstall unwanted software

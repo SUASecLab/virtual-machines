@@ -77,6 +77,7 @@ build {
     scripts = [
       # Install programs first
       "scripts/programs/programs-basic.sh",
+      "scripts/programs/programs-network.sh",
       "scripts/programs/java-17.sh",
       "scripts/programs/ant.sh",
 
@@ -89,6 +90,7 @@ build {
       # Create desktop entries
       "scripts/desktops/desktop-basic.sh",
       "scripts/desktops/desktop-contiki.sh",
+      "scripts/desktops/desktop-network.sh",
 
       # Fix permissions (must be called last)
       "scripts/permissions.sh"
