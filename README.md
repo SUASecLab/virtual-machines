@@ -20,6 +20,11 @@ Then you can start building the VMs:
 packer build <FILE>
 ```
 
+You can change the default passwords with the following script:
+
+````
+./change_password.sh <NEW_PASSWORD>
+````
 Currently there are the following VMs available:
 
 | Name        | File                | Description                                                                                  |
