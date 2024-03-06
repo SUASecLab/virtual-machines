@@ -28,7 +28,7 @@ source "qemu" "iot-base" {
   net_device       = "virtio-net"
   disk_interface   = "virtio"
   boot_wait        = "5s"
-  headless         = "false"
+  headless         = "true"
   boot_command = [
     "<down><tab>",
     "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/debian-preseed.cfg ",
