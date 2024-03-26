@@ -48,7 +48,10 @@ build {
 
   # Configuration file for autologin
   provisioner "file" {
-    source      = "files/lightdm.conf"
+    sources      = [
+      "files/lightdm.conf",
+      "files/xfce4-power-manager.xml"
+    ]
     destination = "/tmp/"
   }
 
@@ -57,6 +60,15 @@ build {
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
     inline = [
       "mv /tmp/lightdm.conf /etc/lightdm/lightdm.conf"
+    ]
+  }
+  
+  
+  # Disable power manager
+  provisioner "shell" {
+    execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
+    inline = [
+      "mkdir -p /home/laboratory/.config/xfce4/xfconf/xfce-perchannel-xml && mv /tmp/xfce4-power-manager.xml /home/laboratory/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml"
     ]
   }
 
