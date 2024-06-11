@@ -4,9 +4,14 @@ cd /home/vagrant
 # Install Apache
 apt-get install -y nginx
 
-# Install MariaDB
-apt-get install -y mariadb-server
-
+# Install DB
+if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
+    echo "Installing MariaDB"
+    apt-get install -y mariadb-server
+else
+    echo "Installing MySQL"
+    apt-get install -y mysql-server
+fi
 # Secure installation if requested
 if [ ! -z "$SECURE" ]; then
 # secure installation with probability of 90%

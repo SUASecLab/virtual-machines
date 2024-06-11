@@ -5,8 +5,14 @@ cd /home/vagrant
 apt-get install -y apache2
 rm /etc/apache2/sites-enabled/000-default.conf
 
-# Install MariaDB
-apt-get install -y mariadb-server
+# Install DB
+if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
+    echo "Installing MariaDB"
+    apt-get install -y mariadb-server
+else
+    echo "Installing MySQL"
+    apt-get install -y mysql-server
+fi
 
 # Secure installation if requested
 if [ ! -z "$SECURE" ]; then
