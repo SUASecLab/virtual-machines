@@ -50,7 +50,8 @@ build {
   provisioner "file" {
     sources      = [
       "files/lightdm.conf",
-      "files/xfce4-power-manager.xml"
+      "files/xfce4-power-manager.xml",
+      "files/network.sh"
     ]
     destination = "/tmp/"
   }

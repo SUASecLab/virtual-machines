@@ -1,5 +1,12 @@
 #!/bin/bash
-cd /home/laboratory
+if id "laboratory" >/dev/null 2>&1; then
+    cd /home/laboratory
+    BASHRC=/home/laboratory/.bashrc
+fi
+if id "vagrant" >/dev/null 2>&1; then
+    cd /home/vagrant
+    BASHRC=/home/vagrant/.bashrc
+fi
 
 # Unpack OpenJDK
 tar -xzf /tmp/openjdk-17+35_linux-x64_bin.tar.gz
@@ -10,7 +17,7 @@ export JAVA_HOME="/opt/jdk-17"
 export PATH="$PATH:$JAVA_HOME/bin"
 
 # Also add new variables to bashrc
-cat >>/home/laboratory/.bashrc <<EOF
+cat >>$BASHRC <<EOF
 export JAVA_HOME="/opt/jdk-17"
 export PATH="\$PATH:\$JAVA_HOME/bin"
 EOF

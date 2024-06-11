@@ -3,9 +3,14 @@ build-heaven
 build-heaven-exam
 build-iotlab
 build-kali
+build-suasploitable-basic
+build-suasploitable-cloud
+build-suasploitable-cms
 
 # Downloaded dependency files
 dependencies
 
 # Script to push exams to the university's fileserver
 files/pushExam.sh
+
+*.backup

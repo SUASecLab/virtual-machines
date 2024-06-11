@@ -23,3 +23,9 @@ if [ ! -f dependencies/mspgcc-4.7.2-compiled.tar.bz2 ]; then
 else
     echo "MSP GCC already downloaded"
 fi
+
+if [ ! -f dependencies/apache-activemq-5.18.0-bin.tar.gz ]; then
+    wget -P dependencies https://archive.apache.org/dist/activemq/5.18.0/apache-activemq-5.18.0-bin.tar.gz
+else
+    echo "Apache ActiveMQ already downloaded"
+fi

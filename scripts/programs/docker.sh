@@ -26,7 +26,12 @@ apt-get install -y docker-ce docker-ce-cli containerd.io \
 
 # Allow running docker as non-root user
 groupadd docker
-usermod -aG docker laboratory
+if id "laboratory" >/dev/null 2>&1; then
+  usermod -aG docker laboratory
+fi
+if id "vagrant" >/dev/null 2>&1; then
+  usermod -aG docker vagrant
+fi
 
 # Automatically start docker on boot
 systemctl enable docker.service
