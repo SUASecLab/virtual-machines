@@ -10,8 +10,12 @@ if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
     apt-get install -y mariadb-server
 else
     echo "Installing MySQL"
+    wget -P /tmp https://dev.mysql.com/get/mysql-apt-config_0.8.30-1_all.deb
+    dpkg -i /tmp/mysql-apt-config*.deb
+    apt-get update
     apt-get install -y mysql-server
 fi
+
 # Secure installation if requested
 if [ ! -z "$SECURE" ]; then
 # secure installation with probability of 90%
