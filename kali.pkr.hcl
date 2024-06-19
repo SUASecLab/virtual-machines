@@ -84,6 +84,7 @@ build {
 
   # Set up system
   provisioner "shell" {
+    environment_vars = ["DEBIAN_FRONTEND=noninteractive"]
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
     scripts = [
       # Set up main system

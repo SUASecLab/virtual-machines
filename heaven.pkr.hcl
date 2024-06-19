@@ -70,6 +70,7 @@ build {
 
   # Install and set up development environments
   provisioner "shell" {
+    environment_vars = ["DEBIAN_FRONTEND=noninteractive"]
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
     scripts = [
       # Install programs first
