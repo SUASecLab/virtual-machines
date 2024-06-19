@@ -2,7 +2,7 @@
 
 # Enable unattended-upgrades with a probability of 60%
 if [ $((0 + $RANDOM % 10)) -lt 6 ]; then
-    echo "Installing unattended-upgrades"
+    echo "application::unattended-upgrades" >> /tmp/apps.txt
     apt-get install -y unattended-upgrades
 
 cat >>/etc/apt/apt.conf.d/10periodic <<EOF

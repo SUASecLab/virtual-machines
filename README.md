@@ -14,6 +14,13 @@ First the dependencies have to be downloaded:
 ./download-dependencies.sh
 ```
 
+Furthermore, you have to create TLS certificates:
+
+```
+cd files/ca
+./ca.sh
+```
+
 Then you can start building the VMs:
 
 ```

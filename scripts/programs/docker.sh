@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "application::docker" >> /tmp/apps.txt
+
 # Install docker engine
 # See https://docs.docker.com/engine/install/debian/
 

@@ -13,11 +13,11 @@ mv /tmp/wp-cli.phar /usr/bin/wp
 
 # Add wp user, insecure password: 30%
 if [ $((0 + $RANDOM % 10)) -lt 3 ]; then
-    echo "Creating WP user with insecure password"
+    echo "configuration::wordpress::system-user::password::insecure" >> /tmp/configuration.txt
     useradd -m -p wordpress -s /bin/bash wordpress
 else
     export WP_USER_PASS=$(openssl rand -base64 20)
-    echo "Changing wp user password $WP_USER_PASS"
+    echo "configuration::wordpress::system-user::password::secure" >> /tmp/configuration.txt
     useradd -m -p $WP_USER_PASS -s /bin/bash wordpress
 fi
 chown wordpress:wordpress /srv/wp -R
@@ -26,13 +26,13 @@ chown wordpress:wordpress /srv/wp -R
 # Enable pubkey authentication: 30% no, 70% yes
 WP_VERSION=$((0 + $RANDOM % 10))
 if [ $WP_VERSION -lt 4 ]; then
-    echo "Downloading latest wp"
+    echo "configuration::wordpress::version::latest" >> /tmp/configuration.txt
     sudo -u wordpress wp core download --path=/srv/wp --version=latest
 elif [ $WP_VERSION -lt 7 ]; then
-    echo "Downloading wp 6.5"
+    echo "configuration::wordpress::version::6.5" >> /tmp/configuration.txt
     sudo -u wordpress wp core download --path=/srv/wp --version=6.5
 else
-    echo "Downloading wp 6.4.2"
+    echo "configuration::wordpress::version::6.4.2" >> /tmp/configuration.txt
     sudo -u wordpress wp core download --path=/srv/wp --version=6.4.2
 fi
 
@@ -42,10 +42,10 @@ mysql -u root -e "CREATE DATABASE wp CHARACTER SET utf8mb4 COLLATE utf8mb4_unico
 # Create DB user
 # privileges on all databases: 60%
 if [ $((0 + $RANDOM % 10)) -lt 6 ]; then
-    echo "Granting privileges on all database tables"
+    echo "configuration::wordpress::db-privileges::all" >> /tmp/configuration.txt
     mysql -u root -e "CREATE USER 'wp'@'%' IDENTIFIED BY 'wp'; GRANT ALL PRIVILEGES ON *.* TO 'wp'@'%'; FLUSH PRIVILEGES;"
 else
-    echo "Granting privileges only on wp database tables"
+    echo "configuration::wordpress::db-privileges::wp-only" >> /tmp/configuration.txt
     mysql -u root -e "CREATE USER 'wp'@'%' IDENTIFIED BY 'wp'; GRANT ALL PRIVILEGES ON wp.* TO 'wp'@'%'; FLUSH PRIVILEGES;"
 fi
 
@@ -59,15 +59,16 @@ sudo -u wordpress wp db create
 # Install wp, secure password: 80%
 if [ $((0 + $RANDOM % 10)) -lt 8 ]; then
     export WP_ADMIN_PW=$(openssl rand -base64 20)
-    echo "Changing wp admin password $WP_ADMIN_PW"
+    echo "configuration::wordpress::web-user::password::secure" >> /tmp/configuration.txt
     sudo -u wordpress wp core install --url=suaseclab.de --title="WP SUASploitable" --admin_user=admin --admin_password=$WP_ADMIN_PW --admin_email=test@example.com
 else
-    echo "Using insecure wp admin password"
+    echo "configuration::wordpress::web-user::password::insecure" >> /tmp/configuration.txt
     sudo -u wordpress wp core install --url=suaseclab.de --title="WP SUASploitable" --admin_user=admin --admin_password=admin --admin_email=test@example.com
 fi
 
 # Update plugins (60%)
 if [ $((0 + $RANDOM % 10)) -lt 6 ]; then
+    echo "configuration::wordpress::plugins::updated" >> /tmp/configuration.txt
     sudo -u wordpress wp plugin update --all
 fi
 

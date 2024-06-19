@@ -10,10 +10,10 @@ mysql -u root -e "CREATE DATABASE IF NOT EXISTS nextcloud CHARACTER SET utf8mb4 
 # Create DB user
 # privileges on all databases: 60%
 if [ $((0 + $RANDOM % 10)) -lt 6 ]; then
-    echo "Granting privileges on all database tables"
+    echo "configuration::nextcloud::db-privileges::all" >> /tmp/configuration.txt
     mysql -u root -e "CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY 'nextcloud'; GRANT ALL PRIVILEGES ON *.* TO 'nextcloud'@'localhost'; FLUSH PRIVILEGES;"
 else
-    echo "Granting privileges only on nextcloud database tables"
+    echo "configuration::nextcloud::db-privileges::nc-only" >> /tmp/configuration.txt
     mysql -u root -e "CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY 'nextcloud'; GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'localhost'; FLUSH PRIVILEGES;"
 fi
 

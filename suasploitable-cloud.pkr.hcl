@@ -48,13 +48,30 @@ build {
   provisioner "file" {
     sources = [
       "scripts/programs/docker.sh",
+      "scripts/programs/suasploitable/certs.sh",
       "scripts/programs/suasploitable/cloud/seafile.sh",
-      "scripts/programs/suasploitable/lamp.sh",
-      "scripts/programs/suasploitable/lemp.sh",
       "scripts/programs/suasploitable/cloud/nextcloud.sh",
-      "files/nextcloud_apache.conf",
-      "files/nextcloud_nginx.conf",
-      "files/seafile_compose.yml"
+      "scripts/programs/suasploitable/web/lamp.sh",
+      "scripts/programs/suasploitable/web/lemp.sh",
+      "scripts/programs/suasploitable/web/db/db_install.sh",
+      "scripts/programs/suasploitable/web/db/db_secure.sh",
+      "scripts/programs/suasploitable/web/db/mariadb.sh",
+      "scripts/programs/suasploitable/web/db/mysql.sh",
+      "scripts/programs/suasploitable/web/php/php-apache.sh",
+      "scripts/programs/suasploitable/web/php/php-composer.sh",
+      "scripts/programs/suasploitable/web/php/php-nginx.sh",
+      "scripts/programs/suasploitable/web/webserver/apache.sh",
+      "scripts/programs/suasploitable/web/webserver/apache-tls.sh",
+      "scripts/programs/suasploitable/web/webserver/nginx.sh",
+      "files/nextcloud/nextcloud_apache.conf",
+      "files/nextcloud/nextcloud_apache_tls.conf",
+      "files/nextcloud/nextcloud_nginx.conf",
+      "files/nextcloud/nextcloud_nginx_tls.conf",
+      "files/seafile_compose.yml",
+      "files/ca/suaseclab.de.2048.crt",
+      "files/ca/suaseclab.de.2048.key",
+      "files/ca/suaseclab.de.4096.crt",
+      "files/ca/suaseclab.de.4096.key"
     ]
     destination = "/tmp/"
   }
@@ -67,20 +84,25 @@ build {
 
   # Install and set up programs
   provisioner "shell" {
+    environment_vars = ["DEBIAN_FRONTEND=noninteractive"]
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
     scripts = [
       # Install programs first
       "scripts/programs/suasploitable/environment.sh",
-
-      # Install cloud: Either SeaFile or Nextcloud. NC with either LAMP or LEMP stack
-      "scripts/programs/suasploitable/cloud/install.sh",
+      "scripts/programs/suasploitable/unattended-upgrades.sh",
 
       # Set up main system
       "scripts/autostart.sh",
       "scripts/programs/suasploitable/ssh.sh",
-      
+
+      # Install cloud: Either SeaFile or Nextcloud. NC with either LAMP or LEMP stack
+      "scripts/programs/suasploitable/cloud/install.sh",
+
+      # Output configuration
+      "scripts/programs/suasploitable/output.sh",
+
       # Fix permissions (must be called last)
-      "scripts/permissions.sh"
+      "scripts/permissions.sh",
     ]
   }
 }

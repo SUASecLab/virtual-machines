@@ -73,6 +73,15 @@ build {
     ]
   }
 
+  # SUASecLab CA cert
+  provisioner "file" {
+    sources = [
+      "files/ca/suasploitable_ca.crt",
+      "files/firefox_policies.json"
+    ]
+    destination = "/tmp/"
+  }
+
   # Set up system
   provisioner "shell" {
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"

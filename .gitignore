@@ -14,3 +14,7 @@ dependencies
 files/pushExam.sh
 
 *.backup
+
+# Generated certificates for CA and servers
+files/ca/suaseclab.de.*
+files/ca/suasploitable_ca.*
