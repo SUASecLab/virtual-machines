@@ -7,19 +7,49 @@ apt-get install -y php-ctype php-curl php-dom php-fileinfo php-gd php-json php-m
 # Create DB
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
 
+# Set password for DB user (20 % insecure, 80% secure)
+export NEXTCLOUD_DB_PW="nextcloud"
+
+if [ $((0 + $RANDOM % 10)) -lt 2 ]; then
+    echo "configuration::nextcloud::db-password::insecure" >> /tmp/configuration.txt;
+    echo $NEXTCLOUD_DB_PW >> /tmp/flags.txt
+else
+    export NEXTCLOUD_DB_PW=$(openssl rand -base64 20)
+    echo "configuration::nextcloud::db-password::secure" >> /tmp/configuration.txt;
+fi
+
 # Create DB user
 # privileges on all databases: 60%
 if [ $((0 + $RANDOM % 10)) -lt 6 ]; then
     echo "configuration::nextcloud::db-privileges::all" >> /tmp/configuration.txt
-    mysql -u root -e "CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY 'nextcloud'; GRANT ALL PRIVILEGES ON *.* TO 'nextcloud'@'localhost'; FLUSH PRIVILEGES;"
+    echo "all-privileges" >> /tmp/flags.txt
+    mysql -u root -e "CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY '${NEXTCLOUD_DB_PW}'; GRANT ALL PRIVILEGES ON *.* TO 'nextcloud'@'localhost'; FLUSH PRIVILEGES;"
 else
     echo "configuration::nextcloud::db-privileges::nc-only" >> /tmp/configuration.txt
-    mysql -u root -e "CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY 'nextcloud'; GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'localhost'; FLUSH PRIVILEGES;"
+    mysql -u root -e "CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY '${NEXTCLOUD_DB_PW}'; GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'localhost'; FLUSH PRIVILEGES;"
 fi
 
-# Get code
-wget -P /tmp https://download.nextcloud.com/server/releases/latest.tar.bz2
-tar -xf /tmp/latest.tar.bz2 -C /var/www
+# Decide if nextcloud user has insecure password (30% yes)
+export NEXTCLOUD_USER_PW="password"
+if [ $((0 + $RANDOM % 10)) -lt 3 ]; then
+    echo "configuration::nextcloud::user-password::insecure" >> /tmp/configuration.txt
+    echo $NEXTCLOUD_USER_PW >> /tmp/flags.txt
+else
+    echo "configuration::nextcloud::user-password::secure" >> /tmp/configuration.txt
+    export NEXTCLOUD_USER_PW=$(openssl rand -base64 20)
+fi
+
+# Decide if old nextcloud version with security vulnerabilities is installed (30% yes)
+if [ $((0 + $RANDOM % 10)) -lt 3 ]; then
+    echo "configuration::nextcloud::version::insecure" >> /tmp/configuration.txt
+    echo "CVE-2024-37882" >> /tmp/flags.txt
+    wget -P /tmp https://download.nextcloud.com/server/releases/nextcloud-28.0.3.tar.bz2
+    tar -xf /tmp/nextcloud-28.0.3.tar.bz2 -C /var/www
+else
+    echo "configuration::nextcloud::version::secure" >> /tmp/configuration.txt
+    wget -P /tmp https://download.nextcloud.com/server/releases/latest.tar.bz2
+    tar -xf /tmp/latest.tar.bz2 -C /var/www
+fi
 
 # Fix access rights
 chown -R www-data:www-data /var/www/nextcloud/
@@ -28,12 +58,12 @@ chown -R www-data:www-data /var/www/nextcloud/
 cd /var/www/nextcloud
 NEXTCLOUD_INSTALLED=$(sudo -u www-data php occ maintenance:install \
     --database "mysql" --database-name "nextcloud" --database-user "nextcloud" \
-    --database-pass "nextcloud" --admin-user "admin" --admin-pass "password")
+    --database-pass ${NEXTCLOUD_DB_PW} --admin-user "admin" --admin-pass ${NEXTCLOUD_USER_PW})
 if [[ $NEXTCLOUD_INSTALLED == *"Error"* ]]; then
     # fix installation (sometimes, NC install sets db user wrong)
     sudo -u www-data sed -i 's|oc_admin|nextcloud|g' /var/www/nextcloud/config/config.php
     sudo -u www-data php occ maintenance:install --database "mysql" --database-name "nextcloud" \
-        --database-user "nextcloud" --database-pass "nextcloud" --admin-user "admin" --admin-pass "password"
+        --database-user "nextcloud" --database-pass ${NEXTCLOUD_DB_PW} --admin-user "admin" --admin-pass ${NEXTCLOUD_USER_PW}
 fi
 
 # Resolve access through untrusted domain

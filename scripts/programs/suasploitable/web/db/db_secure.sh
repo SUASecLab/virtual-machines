@@ -9,9 +9,8 @@ if [ $((0 + $RANDOM % 20)) -lt 19 ]; then
     export DB_ROOT_PASSWORD=$(openssl rand -base64 20)
 else
     echo "configuration::sql::root-password::simple" >> /tmp/configuration.txt
+    echo $DB_ROOT_PASSWORD >> /tmp/flags.txt
 fi
-
-echo "configuration::sql::configuration::secured" >> /tmp/configuration.txt
 
 mysql --user=root <<_EOF_
 UPDATE mysql.user SET Password=PASSWORD('${DB_ROOT_PASSWORD}') WHERE User='root';

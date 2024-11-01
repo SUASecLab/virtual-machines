@@ -66,6 +66,9 @@ build {
     scripts = [
       # Install programs first
       "scripts/programs/suasploitable/environment.sh",
+      
+      # OpenSSH
+      "scripts/programs/suasploitable/ssh-insecure.sh",
 
       # Jorani
       "scripts/programs/suasploitable/jorani.sh",

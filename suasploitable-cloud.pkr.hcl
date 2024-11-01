@@ -3,13 +3,18 @@ variable "ssh_password" {
   default = "vagrant"
 }
 
+variable "output_directory" {
+  type    = string
+  default = "build-suasploitable-cloud"
+}
+
 # Some sources:
 # https://github.com/multani/packer-qemu-debian/tree/master
 
 source "qemu" "suasploitable-cloud" {
   iso_url          = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.5.0-amd64-netinst.iso"
   iso_checksum     = "013f5b44670d81280b5b1bc02455842b250df2f0c6763398feb69af1a805a14f"
-  output_directory = "build-suasploitable-cloud"
+  output_directory = "${var.output_directory}"
   shutdown_command = "echo '${var.ssh_password}'  | sudo -S /sbin/shutdown -hP now"
   disk_size        = "40G"
   format           = "qcow2"
@@ -79,13 +84,13 @@ build {
   # Set hostname
   provisioner "shell" {
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
-    inline = ["hostnamectl set-hostname cloud.suaseclab.de"]
+    inline          = ["hostnamectl set-hostname cloud.suaseclab.de"]
   }
 
   # Install and set up programs
   provisioner "shell" {
     environment_vars = ["DEBIAN_FRONTEND=noninteractive"]
-    execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
+    execute_command  = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
     scripts = [
       # Install programs first
       "scripts/programs/suasploitable/environment.sh",
@@ -98,11 +103,19 @@ build {
       # Install cloud: Either SeaFile or Nextcloud. NC with either LAMP or LEMP stack
       "scripts/programs/suasploitable/cloud/install.sh",
 
-      # Output configuration
-      "scripts/programs/suasploitable/output.sh",
-
       # Fix permissions (must be called last)
       "scripts/permissions.sh",
     ]
+  }
+
+  # Save configuration and flags
+  provisioner "file" {
+    sources = [
+      "/tmp/apps.txt",
+      "/tmp/configuration.txt",
+      "/tmp/flags.txt"
+    ]
+    destination = "${var.output_directory}/"
+    direction   = "download"
   }
 }

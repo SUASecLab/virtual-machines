@@ -3,6 +3,11 @@ variable "ssh_password" {
   default = "vagrant"
 }
 
+variable "output_directory" {
+  type    = string
+  default = "build-suasploitable-cms"
+}
+
 # Some sources:
 # https://github.com/multani/packer-qemu-debian/tree/master
 
@@ -99,12 +104,20 @@ build {
 
       # Install CMS: either wordpress or drupal. Either LAMP or LEMP.
       "scripts/programs/suasploitable/cms/install.sh",
-
-      # Output configuration
-      "scripts/programs/suasploitable/output.sh",
       
       # Fix permissions (must be called last)
       "scripts/permissions.sh",
     ]
+  }
+
+  # Save configuration and flags
+  provisioner "file" {
+    sources = [
+      "/tmp/apps.txt",
+      "/tmp/configuration.txt",
+      "/tmp/flags.txt"
+    ]
+    destination = "${var.output_directory}/"
+    direction   = "download"
   }
 }

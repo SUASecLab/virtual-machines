@@ -17,6 +17,9 @@ if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
             echo "configuration::drupal::tls::enabled" >> /tmp/configuration.txt
             mv /tmp/drupal_apache_tls.conf /etc/apache2/sites-available/drupal-tls.conf
             a2ensite drupal-tls.conf
+        else
+            echo "configuration::drupal::tls::disabled" >> /tmp/configuration.txt
+            echo "no-tls" >> /tmp/flags.txt
         fi
 
         # Enable site
@@ -34,6 +37,9 @@ if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
             echo "configuration::drupal::tls::enabled" >> /tmp/configuration.txt
             mv /tmp/drupal_nginx_tls.conf /etc/nginx/sites-available/drupal-tls
             ln -s /etc/nginx/sites-available/drupal-tls /etc/nginx/sites-enabled/drupal-tls
+        else
+            echo "configuration::drupal::tls::disabled" >> /tmp/configuration.txt
+            echo "no-tls" >> /tmp/flags.txt
         fi
 
         mv /tmp/drupal_nginx.conf /etc/nginx/sites-available/drupal
@@ -58,6 +64,9 @@ else
             echo "configuration::wp::tls::enabled" >> /tmp/configuration.txt
             mv /tmp/wp_apache_tls.conf /etc/apache2/sites-available/wp-tls.conf
             a2ensite wp-tls.conf
+        else
+            echo "configuration::wp::tls::disabled" >> /tmp/configuration.txt
+            echo "no-tls" >> /tmp/flags.txt
         fi
 
         # Enable site
@@ -75,6 +84,9 @@ else
             echo "configuration::wp::tls::enabled" >> /tmp/configuration.txt
             mv /tmp/wp_nginx_tls.conf /etc/nginx/sites-available/wp-tls
             ln -s /etc/nginx/sites-available/wp-tls /etc/nginx/sites-enabled/wp-tls
+        else
+            echo "configuration::wp::tls::disabled" >> /tmp/configuration.txt
+            echo "no-tls" >> /tmp/flags.txt
         fi
 
         mv /tmp/wp_nginx.conf /etc/nginx/sites-available/wp        

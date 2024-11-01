@@ -21,6 +21,9 @@ if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
             echo "configuration::nextcloud::tls::enabled" >> /tmp/configuration.txt
             mv /tmp/nextcloud_apache_tls.conf /etc/apache2/sites-available/nextcloud-tls.conf
             a2ensite nextcloud-tls.conf
+        else
+            echo "configuration::nextcloud::tls::disabled" >> /tmp/configuration.txt
+            echo "no-tls" >> /tmp/flags.txt
         fi
 
         # Enable site
@@ -38,6 +41,9 @@ if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
             echo "configuration::nextcloud::tls::enabled" >> /tmp/configuration.txt
             mv /tmp/nextcloud_nginx_tls.conf /etc/nginx/sites-available/nextcloud-tls
             ln -s /etc/nginx/sites-available/nextcloud-tls /etc/nginx/sites-enabled/nextcloud-tls
+        else
+            echo "configuration::nextcloud::tls::disabled" >> /tmp/configuration.txt
+            echo "no-tls" >> /tmp/flags.txt
         fi
 
         # Configure nginx
