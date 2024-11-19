@@ -7,8 +7,8 @@ variable "ssh_password" {
 # https://github.com/multani/packer-qemu-debian/tree/master
 
 source "qemu" "heaven-exam" {
-  iso_url          = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.5.0-amd64-netinst.iso"
-  iso_checksum     = "013f5b44670d81280b5b1bc02455842b250df2f0c6763398feb69af1a805a14f"
+  iso_url          = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.8.0-amd64-netinst.iso"
+  iso_checksum     = "04396d12b0f377958a070c38a923c227832fa3b3e18ddc013936ecf492e9fbb3"
   output_directory = "build-heaven-exam"
   shutdown_command = "echo '${var.ssh_password}'  | sudo -S /sbin/shutdown -hP now"
   disk_size        = "40G"
