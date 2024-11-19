@@ -12,6 +12,13 @@ apt-get upgrade -y
 # Install programs
 apt-get install network-manager network-manager-gnome -y
 
+# Lzop, vim, tree
+apt-get install lzop tree vim -y
+
+# Locate
+apt-get intall mlocate -y
+updatedb
+
 # Uninstall unwanted software
 apt-get purge libreoffice* -y
 apt-get purge deluge* deluge-gtk* -y
