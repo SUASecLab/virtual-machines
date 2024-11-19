@@ -7,8 +7,8 @@ variable "ssh_password" {
 # https://github.com/multani/packer-qemu-debian/tree/master
 
 source "qemu" "kali" {
-  iso_url          = "https://cdimage.kali.org/kali-2023.4/kali-linux-2023.4-installer-amd64.iso"
-  iso_checksum     = "49f6826e302659378ff0b18eda28121dad7eeab4da3b8d171df034da4996a75e"
+  iso_url          = "https://cdimage.kali.org/kali-2024.3/kali-linux-2024.3-installer-amd64.iso"
+  iso_checksum     = "2ba1abf570ea0685ca4a97dd9c83a65670ca93043ef951f0cd7bbff914fa724a"
   output_directory = "build-kali"
   shutdown_command = "echo '${var.ssh_password}'  | sudo -S /sbin/shutdown -hP now"
   disk_size        = "40G"
