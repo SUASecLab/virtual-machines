@@ -16,7 +16,7 @@ apt-get install network-manager network-manager-gnome -y
 apt-get install lzop tree vim -y
 
 # Locate
-apt-get intall mlocate -y
+apt-get install mlocate -y
 updatedb
 
 # Uninstall unwanted software
