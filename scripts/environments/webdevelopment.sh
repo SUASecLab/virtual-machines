@@ -24,7 +24,6 @@ EOF
 
 # Create docker configuration file
 cat >>/home/laboratory/.webserver-conf/docker/webserver.yaml <<EOF
-version: "3"
 services:
   web:
     image: php:8.3-apache
