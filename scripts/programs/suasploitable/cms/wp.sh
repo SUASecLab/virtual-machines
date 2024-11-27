@@ -23,7 +23,7 @@ else
 fi
 chown wordpress:wordpress /srv/wp -R
 
-# Install wp: 40% latest, 30% 6.5.1 (XSS vuln), 30% 6.4.2 (information exposure)
+# Install wp: 40% latest, 30% 6.5.0 (XSS vuln), 30% 6.4.2 (information exposure)
 WP_VERSION=$((0 + $RANDOM % 10))
 if [ $WP_VERSION -lt 4 ]; then
     echo "configuration::wordpress::version::latest" >> /tmp/configuration.txt
@@ -31,7 +31,7 @@ if [ $WP_VERSION -lt 4 ]; then
 elif [ $WP_VERSION -lt 7 ]; then
     echo "configuration::wordpress::version::6.5" >> /tmp/configuration.txt
     sudo -u wordpress wp core download --path=/srv/wp --version=6.5
-    echo "6.5.1" >> /tmp/flags.txt
+    echo "6.5.0" >> /tmp/flags.txt
 else
     echo "configuration::wordpress::version::6.4.2" >> /tmp/configuration.txt
     sudo -u wordpress wp core download --path=/srv/wp --version=6.4.2
@@ -70,7 +70,7 @@ sudo -u wordpress wp config create --dbname=wp --dbuser=wp --dbpass=${WP_DB_PASS
 sudo -u wordpress wp db create
 
 # Install wp, secure password: 80%
-export WP_ADMIN_PW="admin"
+export WP_ADMIN_PW="123456"
 if [ $((0 + $RANDOM % 10)) -lt 8 ]; then
     export WP_ADMIN_PW=$(openssl rand -base64 20)
     echo "configuration::wordpress::web-user::password::secure" >> /tmp/configuration.txt
