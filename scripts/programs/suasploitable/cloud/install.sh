@@ -23,7 +23,7 @@ if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
             a2ensite nextcloud-tls.conf
         else
             echo "configuration::nextcloud::tls::disabled" >> /tmp/configuration.txt
-            echo "no-tls" >> /tmp/flags.txt
+            echo "TLS" >> /tmp/flags.txt
         fi
 
         # Enable site
@@ -43,7 +43,7 @@ if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
             ln -s /etc/nginx/sites-available/nextcloud-tls /etc/nginx/sites-enabled/nextcloud-tls
         else
             echo "configuration::nextcloud::tls::disabled" >> /tmp/configuration.txt
-            echo "no-tls" >> /tmp/flags.txt
+            echo "TLS" >> /tmp/flags.txt
         fi
 
         # Configure nginx

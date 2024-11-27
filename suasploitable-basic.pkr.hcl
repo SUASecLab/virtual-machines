@@ -3,13 +3,18 @@ variable "ssh_password" {
   default = "vagrant"
 }
 
+variable "output_directory" {
+  type    = string
+  default = "build-suasploitable-basic"
+}
+
 # Some sources:
 # https://github.com/multani/packer-qemu-debian/tree/master
 
 source "qemu" "suasploitable-basic" {
   iso_url          = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.8.0-amd64-netinst.iso"
   iso_checksum     = "04396d12b0f377958a070c38a923c227832fa3b3e18ddc013936ecf492e9fbb3"
-  output_directory = "build-suasploitable-basic"
+  output_directory = "${var.output_directory}"
   shutdown_command = "echo '${var.ssh_password}'  | sudo -S /sbin/shutdown -hP now"
   disk_size        = "40G"
   format           = "qcow2"
@@ -84,5 +89,12 @@ build {
       # Set up main system
       "scripts/autostart.sh"
     ]
+  }
+  
+  # Save flags
+  provisioner "file" {
+    source = "/tmp/flags.txt"
+    destination = "${var.output_directory}/"
+    direction   = "download"
   }
 }

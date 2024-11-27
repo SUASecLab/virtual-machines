@@ -6,10 +6,15 @@ variable "ssh_password" {
 # Some sources:
 # https://github.com/multani/packer-qemu-debian/tree/master
 
+variable "output_directory" {
+  type    = string
+  default = "build-kali"
+}
+
 source "qemu" "kali" {
   iso_url          = "https://cdimage.kali.org/kali-2024.3/kali-linux-2024.3-installer-amd64.iso"
   iso_checksum     = "2ba1abf570ea0685ca4a97dd9c83a65670ca93043ef951f0cd7bbff914fa724a"
-  output_directory = "build-kali"
+  output_directory = "${var.output_directory}"
   shutdown_command = "echo '${var.ssh_password}'  | sudo -S /sbin/shutdown -hP now"
   disk_size        = "40G"
   format           = "qcow2"
@@ -97,8 +102,18 @@ build {
       # Create desktop entries
       "scripts/desktops/desktop-exercises.sh",
 
+      # Hide CTF flags
+      "scripts/environments/kali_ctf.sh",
+
       # Fix permissions (must be called last)
       "scripts/permissions.sh"
     ]
+  }
+  
+  # Save flags
+  provisioner "file" {
+    source = "/tmp/flags.txt"
+    destination = "${var.output_directory}/"
+    direction   = "download"
   }
 }

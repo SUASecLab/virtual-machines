@@ -25,6 +25,8 @@ wget -P /tmp https://github.com/bbalet/jorani/releases/download/v1.0.0/jorani-1.
 mkdir -p /var/www/html
 unzip /tmp/jorani-1.0.0.zip -d /var/www/html
 
+echo "CVE-2023-26469" >> /tmp/flags.txt
+
 # Create DB
 mysql -u root -e "CREATE DATABASE jorani CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 mysql -u root -e "CREATE USER 'lms'@'%' IDENTIFIED BY 'jorani'; GRANT ALL PRIVILEGES ON jorani.* TO 'lms'@'%'; FLUSH PRIVILEGES;"

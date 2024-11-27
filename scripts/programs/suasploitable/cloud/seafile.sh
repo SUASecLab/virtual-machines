@@ -10,7 +10,7 @@ mv /tmp/seafile_compose.yml docker-compose.yml
 if [ $((0 + $RANDOM % 10)) -lt 3 ]; then
     echo "configuration::seafile::insecure" >> /tmp/configuration.txt
     sed -i "s|seafileltd/seafile-mc:11.0-latest|seafileltd/seafile-mc:11.0.10|g" docker-compose.yml
-    echo "11.0.11" >> /tmp/flags.txt
+    echo "11.0.10" >> /tmp/flags.txt
 else
     echo "configuration::seafile::secure" >> /tmp/configuration.txt
 fi
@@ -51,7 +51,7 @@ if [ $((0 + $RANDOM % 10)) -lt 7 ]; then
     sed -i "s|#- /srv/seafile/key.pem:/shared/ssl/cloud.suaseclab.de.key|- /srv/certs/key.pem:/shared/ssl/cloud.suaseclab.de.key|g" docker-compose.yml
 else
     echo "configuration::seafile::tls::disabled" >> /tmp/configuration.txt
-    echo "no-tls" >> /tmp/flags.txt
+    echo "TLS" >> /tmp/flags.txt
 fi
 
 docker compose -f docker-compose.yml up -d
