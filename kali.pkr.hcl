@@ -55,7 +55,6 @@ build {
   provisioner "file" {
     sources      = [
       "files/lightdm.conf",
-      "files/xfce4-power-manager.xml",
       "files/network.sh"
     ]
     destination = "/tmp/"
@@ -68,21 +67,13 @@ build {
       "mv /tmp/lightdm.conf /etc/lightdm/lightdm.conf"
     ]
   }
-  
-  
-  # Disable power manager
-  provisioner "shell" {
-    execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
-    inline = [
-      "mkdir -p /home/laboratory/.config/xfce4/xfconf/xfce-perchannel-xml && mv /tmp/xfce4-power-manager.xml /home/laboratory/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml"
-    ]
-  }
 
   # SUASecLab CA cert
   provisioner "file" {
     sources = [
       "files/ca/suasploitable_ca.crt",
-      "files/firefox_policies.json"
+      "files/firefox_policies.json",
+      "files/kali_environment.sh"
     ]
     destination = "/tmp/"
   }
