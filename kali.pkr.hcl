@@ -12,8 +12,8 @@ variable "output_directory" {
 }
 
 source "qemu" "kali" {
-  iso_url          = "https://cdimage.kali.org/kali-2024.3/kali-linux-2024.3-installer-amd64.iso"
-  iso_checksum     = "2ba1abf570ea0685ca4a97dd9c83a65670ca93043ef951f0cd7bbff914fa724a"
+  iso_url          = "https://cdimage.kali.org/kali-2025.1c/kali-linux-2025.1c-installer-amd64.iso"
+  iso_checksum     = "2f6e18d53a398e18e5961ed546ed1469fd3b9b40a368e19b361f4dd994e6843a"
   output_directory = "${var.output_directory}"
   shutdown_command = "echo '${var.ssh_password}'  | sudo -S /sbin/shutdown -hP now"
   disk_size        = "40G"
