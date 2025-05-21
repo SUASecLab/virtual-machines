@@ -37,9 +37,9 @@ mkdir -p /home/laboratory/.config/autostart
 cd /home/laboratory/.config/autostart
 
 # Run script
-touch environment.desktop
+touch xfce_environment.desktop
 desktop-file-edit \
     --set-name="Set up environment" \
     --set-key="Type" --set-value="Application" \
     --set-key="Exec" --set-value="/opt/kali_environment.sh" \
-    environment.desktop
+    xfce_environment.desktop
