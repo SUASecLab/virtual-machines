@@ -27,3 +27,6 @@ xfconf-query -c xfce4-desktop -np '/backdrop/screen0/monitorVirtual-1/workspace0
 xfconf-query -c xfce4-desktop -np '/backdrop/screen0/monitorVirtual-1/workspace0/image-style' -t 'int' -s 0
 sleep 10
 xfconf-query -c xfce4-desktop -np '/backdrop/screen0/monitorVirtual-1/workspace0/image-style' -t 'int' -s 3
+
+# Install fcrackzip
+sudo apt -y install fcrackzip
