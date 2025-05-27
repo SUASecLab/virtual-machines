@@ -25,5 +25,5 @@ xfconf-query -c xfce4-desktop -np '/backdrop/screen0/monitorVirtual-1/workspace0
 
 # Stretch wallpaper over whole screen
 xfconf-query -c xfce4-desktop -np '/backdrop/screen0/monitorVirtual-1/workspace0/image-style' -t 'int' -s 0
-sleep 2
+sleep 10
 xfconf-query -c xfce4-desktop -np '/backdrop/screen0/monitorVirtual-1/workspace0/image-style' -t 'int' -s 3
