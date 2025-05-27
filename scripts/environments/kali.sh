@@ -9,6 +9,9 @@ EOF
 # Install lzop
 apt-get install lzop -y
 
+# Install fcrackzip
+sudo apt -y install fcrackzip
+
 # Network
 mv /tmp/network.sh /opt/network.sh
 chmod a+x /opt/network.sh
