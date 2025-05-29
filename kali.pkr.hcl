@@ -26,7 +26,7 @@ source "qemu" "kali" {
   http_port_max    = "9010"
   ssh_username     = "laboratory"
   ssh_password     = "${var.ssh_password}"
-  ssh_timeout      = "30m"
+  ssh_timeout      = "40m"
   host_port_min    = "2000"
   host_port_max    = "2010"
   vm_name          = "kali_base.qcow2"
