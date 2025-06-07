@@ -80,6 +80,9 @@ build {
     scripts = [
       # Install programs first
       "scripts/programs/suasploitable/environment.sh",
+
+      # User accounts
+      "scripts/environments/suasploitable-basic.sh",
       
       # OpenSSH
       "scripts/programs/suasploitable/ssh-insecure.sh",
