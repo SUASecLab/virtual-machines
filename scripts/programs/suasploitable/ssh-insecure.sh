@@ -2,10 +2,6 @@
 
 
 # Permit root login
-
-echo "22" >> /tmp/flags.txt
-echo "vagrant" >> /tmp/flags.txt
-
 echo "configuration::ssh::root-login::enabled" >> /tmp/configuration.txt
 sed -i "s|#PermitRootLogin prohibit-password|PermitRootLogin yes|g" /etc/ssh/sshd_config
 echo "PermitRootLogin" >> /tmp/flags.txt
