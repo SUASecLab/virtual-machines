@@ -2,10 +2,14 @@
 
 # installing (old) LAMP stack
 
-# Apache
+# Install Apache
 apt-get install -y apache2
 rm /etc/apache2/sites-enabled/000-default.conf
 rm /var/www/html/* -rf
+
+# Set FQDN
+echo "127.0.0.1 basic.suaseclab.de" >> /etc/hosts
+echo "ServerName basic.suaseclab.de" >> /etc/apache2/apache2.conf
 
 # Install MariaDB
 apt-get install -y mariadb-server
@@ -14,23 +18,44 @@ apt-get install -y mariadb-server
 apt-get install -y curl
 curl -sSL https://packages.sury.org/php/README.txt | bash -x
 apt-get update
-apt-get install -y php7.4 libapache2-mod-php7.4 php7.4-mysql php7.4-cgi php7.4-bcmath php7.4-curl \
-    php7.4-gd php7.4-intl php7.4-json php7.4-mbstring php7.4-opcache php7.4-sqlite3 \
-    php7.4-xml php7.4-zip php7.4-snmp php7.4-imap php7.4-common php7.4-tidy \
-    php7.4-ldap php7.4-imagick
+apt-get install -y php7.4 \
+    php7.4-{mysql,cgi,bcmath,curl,gd,intl,json,mbstring,opcache,sqlite3,xml,zip,snmp,imap,common,tidy,ldap,imagick,cli,apcu,bz2}
+apt-get install -y php-mysqli php-pear php-phpseclib
+apt-get install -y libapache2-mod-php libapache2-mod-php7.4
+
+# Enable mysql
+sed -i "s|;extension=mysqli|extension=mysqli|g" /etc/php/7.4/apache2/php.ini
+
+# Install phpmyadmin
+wget -P /tmp https://files.phpmyadmin.net/phpMyAdmin/4.9.11/phpMyAdmin-4.9.11-all-languages.tar.gz
+mkdir -p /var/www/html/phpmyadmin
+tar xvf /tmp/phpMyAdmin-4.9.11-all-languages.tar.gz --strip-components=1 -C /var/www/html/phpmyadmin
+cp /var/www/html/phpmyadmin/config.sample.inc.php /var/www/html/phpmyadmin/config.inc.php
+sed -i "s|['blowfish_secret'] = '';|['blowfish_secret'] = '123456789';|g" /var/www/html/phpmyadmin/config.inc.php
 
 # Clone source
 apt-get install -y unzip
 wget -P /tmp https://github.com/bbalet/jorani/releases/download/v1.0.0/jorani-1.0.0.zip
-mkdir -p /var/www/html
 unzip /tmp/jorani-1.0.0.zip -d /var/www/html
 
 echo "CVE-2023-26469" >> /tmp/flags.txt
 
 # Create DB
 mysql -u root -e "CREATE DATABASE jorani CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
-mysql -u root -e "CREATE USER 'lms'@'%' IDENTIFIED BY 'jorani'; GRANT ALL PRIVILEGES ON jorani.* TO 'lms'@'%'; FLUSH PRIVILEGES;"
+mysql -u root -e "CREATE USER 'lms'@'%' IDENTIFIED BY 'jorani'; GRANT ALL PRIVILEGES ON *.* TO 'lms'@'%'; FLUSH PRIVILEGES;"
 mysql -u root -e "USE jorani; source /var/www/html/sql/jorani.sql;"
+
+# Insecure DB users
+mysql -u root -e "CREATE USER 'admin'@'%' IDENTIFIED BY 'cocacola'; GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%'; FLUSH PRIVILEGES;"
+mysql -u root -e "CREATE USER 'test'@'%' IDENTIFIED BY 'rainbow'; GRANT ALL PRIVILEGES ON *.* TO 'test'@'%'; FLUSH PRIVILEGES;"
+mysql -u root -e "CREATE USER 'info'@'%' IDENTIFIED BY 'dolphins'; GRANT ALL PRIVILEGES ON *.* TO 'info'@'%'; FLUSH PRIVILEGES;"
+
+echo "cocacola" >> /tmp/flags.txt
+echo "rainbow" >> /tmp/flags.txt
+echo "dolphins" >> /tmp/flags.txt
+
+# Enable remote connections for DB
+sed -i "s|127.0.0.1|0.0.0.0|g" /etc/mysql/mariadb.conf.d/50-server.cnf
 
 # Set webserver configuration
 sed -i "s|'hostname' => ''|'hostname' => 'localhost'|g" /var/www/html/application/config/database.php
