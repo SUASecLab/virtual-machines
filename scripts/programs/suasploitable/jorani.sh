@@ -43,7 +43,7 @@ echo "CVE-2023-26469" >> /tmp/flags.txt
 # Create DB
 mysql -u root -e "CREATE DATABASE jorani CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 mysql -u root -e "CREATE USER 'lms'@'%' IDENTIFIED BY 'jorani'; GRANT ALL PRIVILEGES ON *.* TO 'lms'@'%'; FLUSH PRIVILEGES;"
-mysql -u root -e "USE jorani; source /var/www/html/sql/jorani.sql;"
+mysql -u root -e "USE jorani; source /tmp/jorani.sql;"
 
 # Insecure DB users
 mysql -u root -e "CREATE USER 'admin'@'%' IDENTIFIED BY 'cocacola'; GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%'; FLUSH PRIVILEGES;"
@@ -69,6 +69,9 @@ mv /tmp/jorani_apache.conf /etc/apache2/sites-available/jorani.conf
 a2ensite jorani.conf
 a2enmod rewrite dir env headers mime setenvif
 systemctl restart apache2
+
+# Copy backup file
+cp /tmp/jorani_backup.sql /var/www/html/backup.sql
 
 # Fix access rights
 chown -R www-data:www-data /var/www/html/

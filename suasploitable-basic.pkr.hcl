@@ -59,6 +59,15 @@ build {
     destination = "/tmp/"
   }
 
+  # SQL files
+  provisioner "file" {
+    sources = [
+      "files/jorani_backup.sql",
+      "files/jorani.sql"
+    ]
+    destination = "/tmp/"
+  }
+
   # Set hostname
   provisioner "shell" {
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
