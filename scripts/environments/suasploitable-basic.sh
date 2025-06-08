@@ -1,5 +1,38 @@
 #!/bin/bash
 
+## Configure TCP server
+
+# Install python packages
+apt-get -y install python-is-python3
+
+# Compile
+python -c "import py_compile; py_compile.compile('/tmp/tcp_server.py')"
+cp /tmp/__pycache__/tcp_server.*.pyc /opt/tcp_server
+chmod a+x /opt/tcp_server
+
+# Create systemd service
+cat >>/lib/systemd/system/tcp_server.service <<EOF
+[Unit]
+Description=TCP Server
+
+[Service]
+User=vagrant
+Group=vagrant
+ExecStart=/opt/tcp_server
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl start tcp_server
+systemctl enable tcp_server
+
+# Add flags
+echo "FSe2GLGW" >> /tmp/flags.txt
+echo "x5WdT8cZ" >> /tmp/flags.txt
+echo "6y6GCdnz" >> /tmp/flags.txt
+echo "bonus:aaiN3qPY" >> /tmp/flags.txt
+
 # Create user accounts
 useradd -m -d /home/mnickel -s /bin/bash mnickel
 echo 'mnickel:testing' | chpasswd

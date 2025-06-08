@@ -73,7 +73,8 @@ build {
       "files/ca/suasploitable_ca.crt",
       "files/kali/firefox_policies.json",
       "files/kali/kali_environment.sh",
-      "files/kali/network.sh"
+      "files/kali/network.sh",
+      "files/kali/tcp_client.py"
     ]
     destination = "/tmp/"
   }

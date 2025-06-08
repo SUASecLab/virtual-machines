@@ -54,7 +54,8 @@ build {
     sources = [
       "dependencies/openjdk-17+35_linux-x64_bin.tar.gz",
       "dependencies/apache-activemq-5.18.0-bin.tar.gz",
-      "files/basic/jorani_apache.conf"
+      "files/basic/jorani_apache.conf",
+      "files/basic/tcp_server.py"
     ]
     destination = "/tmp/"
   }
@@ -99,7 +100,7 @@ build {
       # Set up main system
       "scripts/autostart.sh",
 
-      # User accounts (must be last because this removes SU privileges from vagrant)
+      # User accounts and tcp server (must be last because this removes SU privileges from vagrant)
       "scripts/environments/suasploitable-basic.sh"
     ]
   }

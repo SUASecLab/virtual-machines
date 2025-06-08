@@ -16,8 +16,31 @@ sudo apt -y install fcrackzip
 mv /tmp/network.sh /opt/network.sh
 chmod a+x /opt/network.sh
 
-# Disable swap
+# Setup networking script
 (crontab -l 2>/dev/null; echo "* * * * * sudo bash /opt/network.sh") | crontab -
+
+## Configure TCP client
+# Compile
+python -c "import py_compile; py_compile.compile('/tmp/tcp_client.py')"
+cp /tmp/__pycache__/tcp_client.*.pyc /opt/tcp_client
+chmod a+x /opt/tcp_client
+
+# Create systemd service
+cat >>/lib/systemd/system/tcp_client.service <<EOF
+[Unit]
+Description=TCP Client
+
+[Service]
+User=laboratory
+Group=laboratory
+ExecStart=/opt/tcp_client
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl start tcp_client
+systemctl enable tcp_client
 
 ## Install SUASecLab CA cert
 
