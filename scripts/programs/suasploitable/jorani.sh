@@ -52,7 +52,7 @@ echo "s.dietrich@suaseclab.de" >> /tmp/flags.txt
 echo "12345678" >> /tmp/flags.txt
 
 # Password of Kevin Faber
-echo "53VQR8TE" >> /tmp/flags.txt
+echo "bonus:53VQR8TE" >> /tmp/flags.txt
 
 # Create DB
 mysql -u root -e "CREATE DATABASE jorani CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
