@@ -73,6 +73,7 @@ build {
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
     inline = ["hostnamectl set-hostname basic.suaseclab.de"]
   }
+  
   # Install and set up programs
   provisioner "shell" {
     environment_vars = ["DEBIAN_FRONTEND=noninteractive"]
@@ -80,9 +81,6 @@ build {
     scripts = [
       # Install programs first
       "scripts/programs/suasploitable/environment.sh",
-
-      # User accounts
-      "scripts/environments/suasploitable-basic.sh",
       
       # OpenSSH
       "scripts/programs/suasploitable/ssh-insecure.sh",
@@ -99,7 +97,10 @@ build {
       "scripts/programs/suasploitable/activemq.sh",
 
       # Set up main system
-      "scripts/autostart.sh"
+      "scripts/autostart.sh",
+
+      # User accounts (must be last because this removes SU privileges from vagrant)
+      "scripts/environments/suasploitable-basic.sh"
     ]
   }
   

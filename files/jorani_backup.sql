@@ -624,13 +624,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `firstname`, `lastname`, `login`, `email`, `password`, `role`, `manager`, `country`, `organization`, `contract`, `position`, `datehired`, `identifier`, `language`, `ldap_path`, `active`, `timezone`, `calendar`, `random_hash`, `user_properties`, `picture`) VALUES
-(2, 'Michael', 'NICKEL', 'mnickel', 'm.nickel@suaseclab-gmbh.de', '$2a$08$L9KUFs1vcs3BSPZd7UduHeiymhpX5omwhIcvzQBKi.P3qABJGSrVy', 1, 2, NULL, 0, 1, 1, '2025-06-02', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'qq2QCM3XyMS4ScKV2nj8c982', NULL, NULL),
-(3, 'Karolin', 'SAENGER', 'ksaenger', 'k.saenger@suaseclab-gmbh.de', '$2a$08$GJfbGaALghZnvkvTwniqQuuJ1eiYVndj3pElBRubxeEOLNX4qPU1C', 2, 2, NULL, 0, 1, 1, '2025-06-03', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'qCFOJhsYbPBINbyw5Z-q63zA', NULL, NULL),
-(4, 'Kevin', 'FABER', 'kfaber', 'k.faber@suaseclab-gmbh.de', '$2a$08$lkwosdzH1KpS8PV/ig2Gi.F8xtXqp1kSZ/GiN6lJMMk8imigQPLDS', 2, 2, NULL, 0, 1, 1, '2025-06-02', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'TNl_vbCQc6h3khyiE-_wdP6K', NULL, NULL),
-(5, 'Sven', 'DIETRICH', 'sdietrich', 's.dietrich@suaseclab-gmbh.de', '$2a$08$4vJuEBo3xfIR3sB.EoPWbOH5UXtkYDp.4oROcm0kIwaJqN2IMSklW', 2, 2, NULL, 0, 1, 1, '2025-06-04', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'zDqcNqIyk97ITGLgk0A1D1uV', NULL, NULL),
-(6, 'Katja', 'FURST', 'kfurst', 'k.furst@suaseclab-gmbh.de', '$2a$08$R3l4/uyhM5vpwlkpYKkbE.cW/Pjab.8PvfufezHH0QtbU9MMxat6.', 1, 6, NULL, 0, 1, NULL, '2025-06-02', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'oXbo4aK85K_QsVXd0HH5C_zY', NULL, NULL),
-(7, 'Julia', 'JAGER', 'jjager', 'j.jager@suaseclab-gmbh.de', '$2a$08$udxYbUOXZhzJFfsBDHyv8OI1HzVu8cnJorDmpmIlVhdmK7rS/cuZC', 2, 6, NULL, 0, 1, NULL, '2025-06-03', '', 'de', NULL, 1, 'Europe/Berlin', NULL, '9_H0n_2MTBJslqWeN-6Po3t2', NULL, NULL),
-(8, 'Christian', 'SCHMITZ', 'cschmitz', 'c.schmitz@suaseclab-gmbh.de', '$2a$08$x.mJdokuOu4OjR3xBmaViOLlt3irNgMyDypjjps9YQRZXUI9cBaFW', 2, 6, NULL, 0, 1, NULL, '2025-06-05', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'kaDzZl4ryTfcGwYfDhke-rlc', NULL, NULL);
+(2, 'Michael', 'NICKEL', 'mnickel', 'm.nickel@suaseclab.de', '$2a$08$L9KUFs1vcs3BSPZd7UduHeiymhpX5omwhIcvzQBKi.P3qABJGSrVy', 1, 2, NULL, 0, 1, 1, '2025-06-02', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'qq2QCM3XyMS4ScKV2nj8c982', NULL, NULL),
+(3, 'Karolin', 'SAENGER', 'ksaenger', 'k.saenger@suaseclab.de', '$2a$08$GJfbGaALghZnvkvTwniqQuuJ1eiYVndj3pElBRubxeEOLNX4qPU1C', 2, 2, NULL, 0, 1, 1, '2025-06-03', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'qCFOJhsYbPBINbyw5Z-q63zA', NULL, NULL),
+(4, 'Kevin', 'FABER', 'kfaber', 'k.faber@suaseclab.de', '$2a$08$lkwosdzH1KpS8PV/ig2Gi.F8xtXqp1kSZ/GiN6lJMMk8imigQPLDS', 2, 2, NULL, 0, 1, 1, '2025-06-02', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'TNl_vbCQc6h3khyiE-_wdP6K', NULL, NULL),
+(5, 'Sven', 'DIETRICH', 'sdietrich', 's.dietrich@suaseclab.de', '$2a$08$4vJuEBo3xfIR3sB.EoPWbOH5UXtkYDp.4oROcm0kIwaJqN2IMSklW', 2, 2, NULL, 0, 1, 1, '2025-06-04', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'zDqcNqIyk97ITGLgk0A1D1uV', NULL, NULL),
+(6, 'Katja', 'FURST', 'kfurst', 'k.furst@suaseclab.de', '$2a$08$R3l4/uyhM5vpwlkpYKkbE.cW/Pjab.8PvfufezHH0QtbU9MMxat6.', 1, 6, NULL, 0, 1, NULL, '2025-06-02', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'oXbo4aK85K_QsVXd0HH5C_zY', NULL, NULL),
+(7, 'Julia', 'JAGER', 'jjager', 'j.jager@suaseclab.de', '$2a$08$udxYbUOXZhzJFfsBDHyv8OI1HzVu8cnJorDmpmIlVhdmK7rS/cuZC', 2, 6, NULL, 0, 1, NULL, '2025-06-03', '', 'de', NULL, 1, 'Europe/Berlin', NULL, '9_H0n_2MTBJslqWeN-6Po3t2', NULL, NULL),
+(8, 'Christian', 'SCHMITZ', 'cschmitz', 'c.schmitz@suaseclab.de', '$2a$08$x.mJdokuOu4OjR3xBmaViOLlt3irNgMyDypjjps9YQRZXUI9cBaFW', 2, 6, NULL, 0, 1, NULL, '2025-06-05', '', 'de', NULL, 1, 'Europe/Berlin', NULL, 'kaDzZl4ryTfcGwYfDhke-rlc', NULL, NULL);
 
 --
 -- Indexes for dumped tables
