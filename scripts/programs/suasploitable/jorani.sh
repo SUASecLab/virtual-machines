@@ -27,13 +27,10 @@ apt-get install -y libapache2-mod-php libapache2-mod-php7.4
 sed -i "s|;extension=mysqli|extension=mysqli|g" /etc/php/7.4/apache2/php.ini
 
 # Install phpmyadmin
-systemctl stop apache2
 wget -P /tmp https://files.phpmyadmin.net/phpMyAdmin/4.9.11/phpMyAdmin-4.9.11-all-languages.tar.gz
 mkdir -p /var/www/html/phpmyadmin
 tar xvf /tmp/phpMyAdmin-4.9.11-all-languages.tar.gz --strip-components=1 -C /var/www/html/phpmyadmin
 cp /var/www/html/phpmyadmin/config.sample.inc.php /var/www/html/phpmyadmin/config.inc.php
-sed -i "s|['blowfish_secret'] = '';|['blowfish_secret'] = '123456789';|g" /var/www/html/phpmyadmin/config.inc.php
-systemctl start apache2
 
 # Clone source
 apt-get install -y unzip
