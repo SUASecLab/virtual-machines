@@ -91,6 +91,15 @@ mv /tmp/jorani_apache.conf /etc/apache2/sites-available/jorani.conf
 # Server administrator
 echo "m.nickel@suaseclab.de" >> /tmp/flags.txt
 
+# Copy password exercise
+cp /tmp/files.zip /var/www/html/
+
+# Add passwords to flag list (vagrant is user password)
+echo "startrek" >> /tmp/flags.txt
+echo "super" >> /tmp/flags.txt
+echo "porsche" >> /tmp/flags.txt
+echo "vagrant" >> /tmp/flags.txt
+
 # Enable site
 a2ensite jorani.conf
 a2enmod rewrite dir env headers mime setenvif

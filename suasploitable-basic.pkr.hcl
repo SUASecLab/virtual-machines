@@ -55,7 +55,8 @@ build {
       "dependencies/openjdk-17+35_linux-x64_bin.tar.gz",
       "dependencies/apache-activemq-5.18.0-bin.tar.gz",
       "files/basic/jorani_apache.conf",
-      "files/basic/tcp_server.py"
+      "files/basic/tcp_server.py",
+      "files/basic/files.zip"
     ]
     destination = "/tmp/"
   }
