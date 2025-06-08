@@ -1,6 +1,7 @@
 #/!bin/env python3
 import random
 import socket
+import time
 
 # Create flags array
 flags = [b'FSe2GLGW', b'x5WdT8cZ', b'6y6GCdnz']
@@ -26,3 +27,16 @@ except Exception as e:
     print(e)
 finally:
     client_socket.close()
+
+# Mimick login
+
+if time.localtime().tm_min % 15 == 2:
+    import mechanize
+    br = mechanize.Browser()
+    br.set_handle_robots(False)
+    br.open("http://basic.suaseclab.de/session/login")
+    br.select_form(nr=0)
+    br["login"] = "kfaber"
+    br.form = br.global_form()
+    br.form["password"] = "53VQR8TE"
+    res = br.submit()
