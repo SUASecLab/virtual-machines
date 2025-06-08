@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/bin/env python3
 
 def readFile(prefix, filename):
     result = []
@@ -7,7 +7,11 @@ def readFile(prefix, filename):
         with open(filename, 'r') as lines:
             for line in lines:
                 line = line.strip()
-                result.append(prefix + "-" + line)
+                if line.startswith("bonus"):
+                    line = line.split(":")[1]
+                    result.append("bonus-" + line)
+                else:
+                    result.append(prefix + "-" + line)
     except FileNotFoundError as e:
         print("File " + filename + " is not present! Did you build the according virtual machine?")
 
@@ -21,4 +25,6 @@ if __name__ == "__main__":
     result.update(readFile("suasploitable", "build-suasploitable-basic/flags.txt"))
     result.update(readFile("suasploitable", "build-suasploitable-cloud/flags.txt"))
     result.update(readFile("suasploitable", "build-suasploitable-cms/flags.txt"))
-    print(list(result))
+    result = list(result)
+    result.sort()
+    print(result)
