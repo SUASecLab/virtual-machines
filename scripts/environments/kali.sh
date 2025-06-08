@@ -25,22 +25,8 @@ python -c "import py_compile; py_compile.compile('/tmp/tcp_client.py')"
 cp /tmp/__pycache__/tcp_client.*.pyc /opt/tcp_client
 chmod a+x /opt/tcp_client
 
-# Create systemd service
-cat >>/lib/systemd/system/tcp_client.service <<EOF
-[Unit]
-Description=TCP Client
-
-[Service]
-User=laboratory
-Group=laboratory
-ExecStart=/opt/tcp_client
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl start tcp_client
-systemctl enable tcp_client
+# Create crontab entry
+(crontab -l 2>/dev/null; echo "* * * * * /opt/tcp_client") | crontab -
 
 ## Install SUASecLab CA cert
 
