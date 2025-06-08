@@ -54,7 +54,7 @@ build {
     sources = [
       "dependencies/openjdk-17+35_linux-x64_bin.tar.gz",
       "dependencies/apache-activemq-5.18.0-bin.tar.gz",
-      "files/jorani_apache.conf"
+      "files/basic/jorani_apache.conf"
     ]
     destination = "/tmp/"
   }
@@ -62,8 +62,8 @@ build {
   # SQL files
   provisioner "file" {
     sources = [
-      "files/jorani_backup.sql",
-      "files/jorani.sql"
+      "files/basic/jorani_backup.sql",
+      "files/basic/jorani.sql"
     ]
     destination = "/tmp/"
   }
