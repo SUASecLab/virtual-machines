@@ -54,8 +54,7 @@ build {
   # Configuration file for autologin
   provisioner "file" {
     sources      = [
-      "files/lightdm.conf",
-      "files/network.sh"
+      "files/lightdm.conf"
     ]
     destination = "/tmp/"
   }
@@ -68,12 +67,13 @@ build {
     ]
   }
 
-  # SUASecLab CA cert
+  # SUASecLab networking
   provisioner "file" {
     sources = [
       "files/ca/suasploitable_ca.crt",
-      "files/firefox_policies.json",
-      "files/kali_environment.sh"
+      "files/kali/firefox_policies.json",
+      "files/kali/kali_environment.sh",
+      "files/kali/network.sh"
     ]
     destination = "/tmp/"
   }
