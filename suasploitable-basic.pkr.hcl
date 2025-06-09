@@ -65,7 +65,8 @@ build {
   provisioner "file" {
     sources = [
       "files/basic/jorani_backup.sql",
-      "files/basic/jorani.sql"
+      "files/basic/jorani.sql",
+      "files/basic/information.sql"
     ]
     destination = "/tmp/"
   }

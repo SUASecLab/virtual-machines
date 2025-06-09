@@ -48,9 +48,6 @@ echo "2025-06-03" >> /tmp/flags.txt
 # Email of user with id 5
 echo "s.dietrich@suaseclab.de" >> /tmp/flags.txt
 
-# Password of Katja Furst
-echo "12345678" >> /tmp/flags.txt
-
 # Password of Kevin Faber
 echo "bonus:53VQR8TE" >> /tmp/flags.txt
 

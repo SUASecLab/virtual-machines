@@ -10,7 +10,7 @@ EOF
 apt-get install lzop -y
 
 # Install fcrackzip
-sudo apt -y install fcrackzip
+sudo apt -y install fcrackzip dirsearch nuclei
 
 # Network
 mv /tmp/network.sh /opt/network.sh

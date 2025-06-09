@@ -19,6 +19,7 @@ Description=TCP Server
 User=vagrant
 Group=vagrant
 ExecStart=/opt/tcp_server
+Restart=on-abort
 
 [Install]
 WantedBy=multi-user.target
@@ -75,6 +76,10 @@ echo "ug7Xo82i" >> /tmp/flags.txt
 
 useradd -m -d /home/cschmitz -s /bin/bash cschmitz
 echo 'cschmitz:ryrbky8zjvmWML5tcckD' | chpasswd
+
+# Set up information database
+mysql -u root -e "CREATE DATABASE information; USE information; source /tmp/information.sql;"
+echo "3YPGxmZ8" >> /tmp/flags.txt
 
 # Remove superuser from vagrant user (must be last)
 chown vagrant /home/vagrant/ -R
