@@ -7,6 +7,9 @@ apt-get install -y apache2
 rm /etc/apache2/sites-enabled/000-default.conf
 rm /var/www/html/* -rf
 
+echo "www-data" >> /tmp/flags.txt
+echo "/var/www/html" >> /tmp/flags.txt
+
 # Set FQDN
 echo "127.0.0.1 basic.suaseclab.de" >> /etc/hosts
 echo "ServerName basic.suaseclab.de" >> /etc/apache2/apache2.conf
