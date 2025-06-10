@@ -63,9 +63,9 @@ mysql -u root -e "USE jorani; source /tmp/jorani.sql;"
 echo "maternity" >> /tmp/flags.txt
 
 # Insecure DB users
-mysql -u root -e "CREATE USER 'admin'@'%' IDENTIFIED BY 'cocacola'; GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%'; FLUSH PRIVILEGES;"
-mysql -u root -e "CREATE USER 'test'@'%' IDENTIFIED BY 'rainbow'; GRANT ALL PRIVILEGES ON *.* TO 'test'@'%'; FLUSH PRIVILEGES;"
-mysql -u root -e "CREATE USER 'info'@'%' IDENTIFIED BY 'dolphins'; GRANT ALL PRIVILEGES ON *.* TO 'info'@'%'; FLUSH PRIVILEGES;"
+mysql -u root -e "CREATE USER 'admin'@'%' IDENTIFIED BY 'cocacola'; GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+mysql -u root -e "CREATE USER 'test'@'%' IDENTIFIED BY 'rainbow'; GRANT ALL PRIVILEGES ON *.* TO 'test'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+mysql -u root -e "CREATE USER 'info'@'%' IDENTIFIED BY 'dolphins'; GRANT ALL PRIVILEGES ON *.* TO 'info'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;"
 
 echo "cocacola" >> /tmp/flags.txt
 echo "rainbow" >> /tmp/flags.txt
