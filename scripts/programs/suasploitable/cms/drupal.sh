@@ -11,8 +11,8 @@ apt-get install -y php-curl php-gd php-mbstring php-mysql php-opcache php-readli
 # Get code
 export COMPOSER_ALLOW_SUPERUSER=1
 
-# Install drupal, version with security issues (30% yes)
-if [ $((0 + $RANDOM % 10)) -lt 3 ]; then
+# Install drupal, version with security issues (40% yes)
+if [ $((0 + $RANDOM % 10)) -lt 4 ]; then
     echo "configuration::drupal::version:10.1.3" >> /tmp/configuration.txt
     echo "CVE-2023-5256" >> /tmp/flags.txt
     composer create-project drupal/recommended-project:10.1.3 drupal
@@ -34,9 +34,9 @@ chown www-data:www-data /srv/drupal/web -R
 # Create DB
 mysql -u root -e "CREATE DATABASE drupal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 
-# Create DB user, insecure password 20%
-export D_DB_PASSWORD="vagrant"
-if [ $((0 + $RANDOM % 10)) -lt 2 ]; then
+# Create DB user, insecure password 30%
+export D_DB_PASSWORD=$(/tmp/password.py)
+if [ $((0 + $RANDOM % 10)) -lt 3 ]; then
     echo "configuration::drupal::db-password::insecure" >> /tmp/configuration.txt
     echo $D_DB_PASSWORD >> /tmp/flags.txt
 else
@@ -55,9 +55,9 @@ else
     mysql -u root -e "CREATE USER 'vagrant'@'%' IDENTIFIED BY '${D_DB_PASSWORD}'; GRANT ALL PRIVILEGES ON drupal.* TO 'vagrant'@'%'; FLUSH PRIVILEGES;"
 fi
 
-# Insecure admin pw? (20%)
-export D_ADMIN_PASSWORD="admin"
-if [ $((0 + $RANDOM % 10)) -lt 2 ]; then
+# Insecure admin pw? (30%)
+export D_ADMIN_PASSWORD=$(/tmp/password.py)
+if [ $((0 + $RANDOM % 10)) -lt 3 ]; then
     echo "configuration::drupal::user-password::insecure" >> /tmp/configuration.txt
     echo $D_ADMIN_PASSWORD >> /tmp/flags.txt
 else

@@ -76,11 +76,13 @@ build {
       "files/ca/suaseclab.de.2048.crt",
       "files/ca/suaseclab.de.2048.key",
       "files/ca/suaseclab.de.4096.crt",
-      "files/ca/suaseclab.de.4096.key"
+      "files/ca/suaseclab.de.4096.key",
+      "files/pwgen/500-worst-passwords.txt",
+      "files/pwgen/password.py"
     ]
     destination = "/tmp/"
   }
-
+  
   # Set hostname
   provisioner "shell" {
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"

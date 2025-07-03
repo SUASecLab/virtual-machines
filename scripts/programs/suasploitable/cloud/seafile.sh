@@ -17,8 +17,15 @@ fi
 
 # Change DB root password, 80%
 if [ $((0 + $RANDOM % 10)) -lt 8 ]; then
-    export SEAFILE_DB_PASSWORD=$(openssl rand -base64 20)
-    echo "configuration::seafile::db-password::secure" >> /tmp/configuration.txt
+# Secure password: 50 %
+    if [ $((0 + $RANDOM % 10)) -lt 5 ]; then
+        export SEAFILE_DB_PASSWORD=$(openssl rand -base64 20)
+        echo "configuration::seafile::db-password::secure" >> /tmp/configuration.txt
+    else
+        export SEAFILE_DB_PASSWORD=$(/tmp/password.py)
+        echo "configuration::seafile::db-password::top-500" >> /tmp/configuration.txt
+        echo $SEAFILE_DB_PASSWORD >> /tmp/flags.txt
+    fi
     sed -i "s|MYSQL_ROOT_PASSWORD=db_dev|MYSQL_ROOT_PASSWORD=$SEAFILE_DB_PASSWORD|g" docker-compose.yml
     sed -i "s|DB_ROOT_PASSWD=db_dev|DB_ROOT_PASSWD=$SEAFILE_DB_PASSWORD|g" docker-compose.yml
 else
@@ -28,8 +35,15 @@ fi
 
 # Change default user password, 70%
 if [ $((0 + $RANDOM % 10)) -lt 7 ]; then
-    export SEAFILE_ADMIN_PASSWORD=$(openssl rand -base64 20)
-    echo "configuration::seafile::user-password::secure" >> /tmp/configuration.txt
+# Secure pasword: 50 %
+    export SEAFILE_ADMIN_PASSWORD=$(/tmp/password.py)
+    if [ $((0 + $RANDOM % 10)) -lt 5 ]; then
+        export SEAFILE_ADMIN_PASSWORD=$(openssl rand -base64 20)
+        echo "configuration::seafile::user-password::secure" >> /tmp/configuration.txt
+    else
+        echo "configuration::seafile::user-password::top-500" >> /tmp/configuration.txt
+        echo $SEAFILE_ADMIN_PASSWORD >> /tmp/flags.txt
+    fi
     sed -i "s|SEAFILE_ADMIN_PASSWORD=asecret|SEAFILE_ADMIN_PASSWORD=$SEAFILE_ADMIN_PASSWORD|g" docker-compose.yml
 else
     echo "configuration::seafile::user-password::insecure" >> /tmp/configuration.txt

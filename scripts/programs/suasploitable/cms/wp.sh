@@ -11,15 +11,16 @@ wget -P /tmp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 chmod +x /tmp/wp-cli.phar
 mv /tmp/wp-cli.phar /usr/bin/wp
 
-# Add wp user, insecure password: 30%
+# Add wp user, insecure password: 30% 
+export WP_USER_PW=$(/tmp/password.py)
 if [ $((0 + $RANDOM % 10)) -lt 3 ]; then
-    echo "configuration::wordpress::system-user::password::insecure" >> /tmp/configuration.txt
-    useradd -m -p wordpress -s /bin/bash wordpress
-    echo "wordpress" >> /tmp/flags.txt
+    echo "configuration::wordpress::system-user::password::top-500" >> /tmp/configuration.txt
+    useradd -m -p $WP_USER_PW -s /bin/bash wordpress
+    echo "${WP_USER_PW}" >> /tmp/flags.txt
 else
-    export WP_USER_PASS=$(openssl rand -base64 20)
+    export WP_USER_PW=$(openssl rand -base64 20)
     echo "configuration::wordpress::system-user::password::secure" >> /tmp/configuration.txt
-    useradd -m -p $WP_USER_PASS -s /bin/bash wordpress
+    useradd -m -p $WP_USER_PW -s /bin/bash wordpress
 fi
 chown wordpress:wordpress /srv/wp -R
 
@@ -41,10 +42,10 @@ fi
 # Create DB
 mysql -u root -e "CREATE DATABASE wp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
 
-export WP_DB_PASSWORD="wp"
+export WP_DB_PASSWORD=$(/tmp/password.py)
 # Insecure wp db password (20%)
 if [ $((0 + $RANDOM % 10)) -lt 2 ]; then
-    echo "configuration::wordpress::user-password::insecure" >> /tmp/configuration.txt
+    echo "configuration::wordpress::user-password::top-500" >> /tmp/configuration.txt
     echo $WP_DB_PASSWORD >> /tmp/flags.txt
 else
     echo "configuration::wordpress::user-password::secure" >> /tmp/configuration.txt
@@ -70,7 +71,7 @@ sudo -u wordpress wp config create --dbname=wp --dbuser=wp --dbpass=${WP_DB_PASS
 sudo -u wordpress wp db create
 
 # Install wp, secure password: 80%
-export WP_ADMIN_PW="123456"
+export WP_ADMIN_PW=$(/tmp/password.py)
 if [ $((0 + $RANDOM % 10)) -lt 8 ]; then
     export WP_ADMIN_PW=$(openssl rand -base64 20)
     echo "configuration::wordpress::web-user::password::secure" >> /tmp/configuration.txt

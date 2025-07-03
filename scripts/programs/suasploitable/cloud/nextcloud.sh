@@ -7,11 +7,11 @@ apt-get install -y php-ctype php-curl php-dom php-fileinfo php-gd php-json php-m
 # Create DB
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
 
-# Set password for DB user (20 % insecure, 80% secure)
-export NEXTCLOUD_DB_PW="nextcloud"
+# Change password for DB user (30 % insecure, 70% secure)
+export NEXTCLOUD_DB_PW=$(/tmp/password.py)
 
 if [ $((0 + $RANDOM % 10)) -lt 2 ]; then
-    echo "configuration::nextcloud::db-password::insecure" >> /tmp/configuration.txt;
+    echo "configuration::nextcloud::db-password::top-500" >> /tmp/configuration.txt;
     echo $NEXTCLOUD_DB_PW >> /tmp/flags.txt
 else
     export NEXTCLOUD_DB_PW=$(openssl rand -base64 20)
@@ -30,9 +30,9 @@ else
 fi
 
 # Decide if nextcloud user has insecure password (30% yes)
-export NEXTCLOUD_USER_PW="password"
+export NEXTCLOUD_USER_PW=$(/tmp/password.py)
 if [ $((0 + $RANDOM % 10)) -lt 3 ]; then
-    echo "configuration::nextcloud::user-password::insecure" >> /tmp/configuration.txt
+    echo "configuration::nextcloud::user-password::top-500" >> /tmp/configuration.txt
     echo $NEXTCLOUD_USER_PW >> /tmp/flags.txt
 else
     echo "configuration::nextcloud::user-password::secure" >> /tmp/configuration.txt

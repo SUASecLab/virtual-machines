@@ -2,13 +2,13 @@
 
 # Postinstall for MariaDB and MySQL
 
-# Use a secure password in 95% of the cases
-export DB_ROOT_PASSWORD=admin
-if [ $((0 + $RANDOM % 20)) -lt 19 ]; then
-    echo "configuration::sql::root-password::random" >> /tmp/configuration.txt
+# Use a secure password in 80% of the cases
+export DB_ROOT_PASSWORD=$(/tmp/password.py)
+if [ $((0 + $RANDOM % 10)) -lt 8 ]; then
+    echo "configuration::sql::root-password::secure" >> /tmp/configuration.txt
     export DB_ROOT_PASSWORD=$(openssl rand -base64 20)
 else
-    echo "configuration::sql::root-password::simple" >> /tmp/configuration.txt
+    echo "configuration::sql::root-password::top-500" >> /tmp/configuration.txt
     echo $DB_ROOT_PASSWORD >> /tmp/flags.txt
 fi
 
