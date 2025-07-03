@@ -5,10 +5,10 @@
 # Use a secure password in 80% of the cases
 export DB_ROOT_PASSWORD=$(/tmp/password.py)
 if [ $((0 + $RANDOM % 10)) -lt 8 ]; then
-    echo "configuration::sql::root-password::secure" >> /tmp/configuration.txt
+    echo "configuration::db::root-password::secure" >> /tmp/configuration.txt
     export DB_ROOT_PASSWORD=$(openssl rand -base64 20)
 else
-    echo "configuration::sql::root-password::top-500" >> /tmp/configuration.txt
+    echo "configuration::db::root-password::top-500" >> /tmp/configuration.txt
     echo $DB_ROOT_PASSWORD >> /tmp/flags.txt
 fi
 

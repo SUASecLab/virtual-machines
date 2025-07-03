@@ -2,8 +2,10 @@
 
 # Install DB
 if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
+   echo "configuration::db:maria" >> /tmp/configuration.txt
    bash /tmp/mariadb.sh
 else
+   echo "configuration::db:mysql" >> /tmp/configuration.txt
    bash /tmp/mysql.sh
 fi
 
