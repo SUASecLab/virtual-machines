@@ -49,6 +49,7 @@ if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
 
     # Install drupal
     bash /tmp/drupal.sh
+    bash /tmp/db_web_postinstall.sh
 else
     echo "application::wordpress" >> /tmp/apps.txt
 
@@ -96,4 +97,5 @@ else
 
     # Install WP
     bash /tmp/wp.sh
+    bash /tmp/db_web_postinstall.sh
 fi

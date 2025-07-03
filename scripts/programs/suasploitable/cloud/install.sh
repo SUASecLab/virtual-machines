@@ -52,6 +52,7 @@ if [ $((0 + $RANDOM % 2)) -eq 0 ]; then
         systemctl restart nginx
     fi
     bash /tmp/nextcloud.sh
+    bash /tmp/db_web_postinstall.sh
 else
     echo "application::seafile" >> /tmp/apps.txt
     bash /tmp/docker.sh

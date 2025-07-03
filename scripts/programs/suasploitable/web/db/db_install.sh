@@ -10,7 +10,7 @@ else
 fi
 
 # Secure installation: 80%
-if [ $((0 + $RANDOM % 10)) -eq 8 ]; then
+if [ $((0 + $RANDOM % 10)) -lt 8 ]; then
    echo "configuration::db:secure" >> /tmp/configuration.txt
    bash /tmp/db_secure.sh
 else

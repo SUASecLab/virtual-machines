@@ -59,6 +59,7 @@ build {
       "scripts/programs/suasploitable/web/lemp.sh",
       "scripts/programs/suasploitable/web/db/db_install.sh",
       "scripts/programs/suasploitable/web/db/db_secure.sh",
+      "scripts/programs/suasploitable/web/db/db_web_postinstall.sh",
       "scripts/programs/suasploitable/web/db/mariadb.sh",
       "scripts/programs/suasploitable/web/db/mysql.sh",
       "scripts/programs/suasploitable/web/php/php-apache.sh",
