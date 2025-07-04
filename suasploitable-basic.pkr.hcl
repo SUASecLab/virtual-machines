@@ -86,18 +86,18 @@ build {
       "scripts/programs/suasploitable/environment.sh",
       
       # OpenSSH
-      "scripts/programs/suasploitable/ssh-insecure.sh",
+      "scripts/programs/suasploitable/basic/ssh-insecure.sh",
 
       # Jorani
-      "scripts/programs/suasploitable/jorani.sh",
+      "scripts/programs/suasploitable/basic/jorani.sh",
 
       # JuiceShop
       "scripts/programs/docker.sh",
-      "scripts/programs/suasploitable/juiceshop.sh",
+      "scripts/programs/suasploitable/basic/juiceshop.sh",
 
       # ActiveMQ
       "scripts/programs/java-17.sh",
-      "scripts/programs/suasploitable/activemq.sh",
+      "scripts/programs/suasploitable/basic/activemq.sh",
 
       # Set up main system
       "scripts/autostart.sh",

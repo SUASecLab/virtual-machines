@@ -52,34 +52,36 @@ build {
   # Installation scripts
   provisioner "file" {
     sources = [
+      # Scripts called by other scripts or python
       "scripts/programs/docker.sh",
-      "scripts/programs/suasploitable/certs.sh",
-      "scripts/programs/suasploitable/cloud/seafile.sh",
-      "scripts/programs/suasploitable/cloud/nextcloud.sh",
-      "scripts/programs/suasploitable/web/lamp.sh",
-      "scripts/programs/suasploitable/web/lemp.sh",
-      "scripts/programs/suasploitable/web/db/db_install.sh",
-      "scripts/programs/suasploitable/web/db/db_secure.sh",
-      "scripts/programs/suasploitable/web/db/db_web_postinstall.sh",
-      "scripts/programs/suasploitable/web/db/mariadb.sh",
-      "scripts/programs/suasploitable/web/db/mysql.sh",
-      "scripts/programs/suasploitable/web/php/php-apache.sh",
-      "scripts/programs/suasploitable/web/php/php-composer.sh",
-      "scripts/programs/suasploitable/web/php/php-nginx.sh",
-      "scripts/programs/suasploitable/web/webserver/apache.sh",
-      "scripts/programs/suasploitable/web/webserver/apache-tls.sh",
-      "scripts/programs/suasploitable/web/webserver/nginx.sh",
+      "scripts/programs/suasploitable/data_center/bash/certs.sh",
+      "scripts/programs/suasploitable/data_center/python/cloud.py",
+      "scripts/programs/suasploitable/data_center/python/configuration.py",
+      "scripts/programs/suasploitable/data_center/python/environment.py",
+      "scripts/programs/suasploitable/data_center/python/gacha.py",
+      "scripts/programs/suasploitable/data_center/python/password.py",
+      "scripts/programs/suasploitable/data_center/python/webserver.py",
+
+      # Configuration files for Nextcloud
       "files/nextcloud/nextcloud_apache.conf",
       "files/nextcloud/nextcloud_apache_tls.conf",
       "files/nextcloud/nextcloud_nginx.conf",
       "files/nextcloud/nextcloud_nginx_tls.conf",
+
+      # Configuration file for SeaFile
       "files/seafile_compose.yml",
+
+      # Portainer configuration file
+      "files/portainer.yml",
+
+      # TLS certificates
       "files/ca/suaseclab.de.2048.crt",
       "files/ca/suaseclab.de.2048.key",
       "files/ca/suaseclab.de.4096.crt",
       "files/ca/suaseclab.de.4096.key",
-      "files/pwgen/500-worst-passwords.txt",
-      "files/pwgen/password.py"
+
+      # Password list
+      "files/500-worst-passwords.txt"
     ]
     destination = "/tmp/"
   }
@@ -90,21 +92,17 @@ build {
     inline          = ["hostnamectl set-hostname cloud.suaseclab.de"]
   }
 
-  # Install and set up programs
+  # Install and set up environment
   provisioner "shell" {
     environment_vars = ["DEBIAN_FRONTEND=noninteractive"]
     execute_command  = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
     scripts = [
-      # Install programs first
-      "scripts/programs/suasploitable/environment.sh",
-      "scripts/programs/suasploitable/unattended-upgrades.sh",
-
       # Set up main system
       "scripts/autostart.sh",
-      "scripts/programs/suasploitable/ssh.sh",
+      "scripts/programs/suasploitable/environment.sh",
 
-      # Install cloud: Either SeaFile or Nextcloud. NC with either LAMP or LEMP stack
-      "scripts/programs/suasploitable/cloud/install.sh",
+      # Install cloud
+      "scripts/programs/suasploitable/data_center/bash/cloud.sh",
 
       # Fix permissions (must be called last)
       "scripts/permissions.sh",
@@ -114,8 +112,8 @@ build {
   # Save configuration and flags
   provisioner "file" {
     sources = [
-      "/tmp/apps.txt",
-      "/tmp/configuration.txt",
+      "/tmp/configuration.yaml",
+      "/tmp/install_script.sh",
       "/tmp/flags.txt"
     ]
     destination = "${var.output_directory}/"

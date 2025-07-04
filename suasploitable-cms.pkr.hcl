@@ -52,36 +52,36 @@ build {
   # Installation scripts
   provisioner "file" {
     sources = [
-      "scripts/programs/suasploitable/certs.sh",
-      "scripts/programs/suasploitable/cms/drupal.sh",
-      "scripts/programs/suasploitable/cms/wp.sh",
-      "scripts/programs/suasploitable/web/lamp.sh",
-      "scripts/programs/suasploitable/web/lemp.sh",
-      "scripts/programs/suasploitable/web/db/db_install.sh",
-      "scripts/programs/suasploitable/web/db/db_secure.sh",
-      "scripts/programs/suasploitable/web/db/db_web_postinstall.sh",
-      "scripts/programs/suasploitable/web/db/mariadb.sh",
-      "scripts/programs/suasploitable/web/db/mysql.sh",
-      "scripts/programs/suasploitable/web/php/php-apache.sh",
-      "scripts/programs/suasploitable/web/php/php-composer.sh",
-      "scripts/programs/suasploitable/web/php/php-nginx.sh",
-      "scripts/programs/suasploitable/web/webserver/apache.sh",
-      "scripts/programs/suasploitable/web/webserver/apache-tls.sh",
-      "scripts/programs/suasploitable/web/webserver/nginx.sh",
+      # Scripts called by other scripts or python
+      "scripts/programs/suasploitable/data_center/bash/certs.sh",
+      "scripts/programs/suasploitable/data_center/bash/certs.sh",
+      "scripts/programs/suasploitable/data_center/python/cms.py",
+      "scripts/programs/suasploitable/data_center/python/configuration.py",
+      "scripts/programs/suasploitable/data_center/python/environment.py",
+      "scripts/programs/suasploitable/data_center/python/gacha.py",
+      "scripts/programs/suasploitable/data_center/python/password.py",
+      "scripts/programs/suasploitable/data_center/python/webserver.py",
+
+      # Configuration files for Drupal
       "files/drupal/drupal_apache.conf",
       "files/drupal/drupal_apache_tls.conf",
       "files/drupal/drupal_nginx.conf",
       "files/drupal/drupal_nginx_tls.conf",
+
+      # Configuration files for WordPress
       "files/wp/wp_apache.conf",
       "files/wp/wp_apache_tls.conf",
       "files/wp/wp_nginx.conf",
       "files/wp/wp_nginx_tls.conf",
+
+      # TLS certificates
       "files/ca/suaseclab.de.2048.crt",
       "files/ca/suaseclab.de.2048.key",
       "files/ca/suaseclab.de.4096.crt",
       "files/ca/suaseclab.de.4096.key",
-      "files/pwgen/500-worst-passwords.txt",
-      "files/pwgen/password.py"
+
+      # Password list
+      "files/500-worst-passwords.txt"
     ]
     destination = "/tmp/"
   }
@@ -97,16 +97,12 @@ build {
     environment_vars = ["DEBIAN_FRONTEND=noninteractive"]
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
     scripts = [
-      # Install programs first
-      "scripts/programs/suasploitable/environment.sh",
-      "scripts/programs/suasploitable/unattended-upgrades.sh",
-
       # Set up main system
       "scripts/autostart.sh",
-      "scripts/programs/suasploitable/ssh.sh",
+      "scripts/programs/suasploitable/environment.sh",
 
-      # Install CMS: either wordpress or drupal. Either LAMP or LEMP.
-      "scripts/programs/suasploitable/cms/install.sh",
+      # Install CMS
+      "scripts/programs/suasploitable/data_center/bash/cms.sh",
       
       # Fix permissions (must be called last)
       "scripts/permissions.sh",
@@ -116,8 +112,8 @@ build {
   # Save configuration and flags
   provisioner "file" {
     sources = [
-      "/tmp/apps.txt",
-      "/tmp/configuration.txt",
+      "/tmp/configuration.yaml",
+      "/tmp/install_script.sh",
       "/tmp/flags.txt"
     ]
     destination = "${var.output_directory}/"
