@@ -88,13 +88,58 @@ apt-get install -y fail2ban
 
     return conf
 
+def docker(conf: Configuration) -> Configuration:
+    conf.conf_dict["docker"]["available"] = True
+
+    conf.install_script += """
+apt-get update
+apt-get install -y ca-certificates curl gnupg
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update
+
+apt-get install -y docker-ce docker-ce-cli containerd.io \
+    docker-buildx-plugin docker-compose-plugin
+
+systemctl enable docker.service
+systemctl enable containerd.service
+    """
+
+    if conf.gacha.pull(30, True):
+        # Expose Docker TCP socket
+        conf.install_script += """
+cat >> /etc/docker/daemon.json <<EOF
+echo  {"hosts": ["tcp://0.0.0.0:2375", "unix:///var/run/docker.sock"]}
+EOF
+
+mkdir -p /etc/systemd/system/docker.service.d/
+
+cat >> /etc/systemd/system/docker.service.d/override.conf <<EOF
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd --config-file /etc/docker/daemon.json
+EOF
+        """
+        conf.conf_dict["docker"]["tcp_exposed"] = True
+    else:
+        conf.conf_dict["docker"]["tcp_exposed"] = False
+
+    return conf
+
+
 def portainer(conf: Configuration) -> Configuration:
     # Generate secure password: 70%
     if conf.gacha.pull(30, True):
         # Insecure password 
         conf.conf_dict["portainer"]["password_type"] = "insecure"
         conf.conf_dict["portainer"]["password"] = password.insecure_password()
-        conf.flags.add(conf.conf_dict["portainer"]["password"])
+        conf.flags.append(conf.conf_dict["portainer"]["password"])
     else:
         # Secure password 
         conf.conf_dict["portainer"]["password_type"] = "secure"
@@ -106,4 +151,7 @@ mv /tmp/portainer.yml .
 echo -n {conf.conf_dict["portainer"]["password"]} > /opt/portainer_password
 docker compose -f portainer.yml up -d
     """
+
+    # Append container name to flags
+    conf.flags.append("portainer")
     return conf

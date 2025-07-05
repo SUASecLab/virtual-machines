@@ -19,9 +19,7 @@ config.conf_dict["cloud_application"] = "nextcloud" if config.gacha.pull(50) == 
 # Application is seafile
 if config.conf_dict["cloud_application"] == "seafile":
     # Install docker
-    config.install_script += """
-bash /tmp/docker.sh
-    """
+    config = environment.docker(config)
 
     # Create and populate configuration directory
     config.install_script += """
@@ -29,6 +27,11 @@ mkdir -p /srv/seafile
 cd /srv/seafile
 mv /tmp/seafile_compose.yml docker-compose.yml
     """
+
+    # Add container names to flags
+    config.flags.append("seafile-mysql")
+    config.flags.append("seafile-memcached")
+    config.flags.append("seafile")
 
     # Use old version with vulnerabilities (30&)
     if config.gacha.pull(30):

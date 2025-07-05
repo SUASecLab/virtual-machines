@@ -1,5 +1,5 @@
 services:
-  db:
+  portainer:
     image: portainer/portainer-ce:lts
     container_name: portainer
     restart: always
