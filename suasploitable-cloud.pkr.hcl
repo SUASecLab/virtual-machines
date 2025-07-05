@@ -58,6 +58,7 @@ build {
       "scripts/programs/suasploitable/data_center/python/configuration.py",
       "scripts/programs/suasploitable/data_center/python/environment.py",
       "scripts/programs/suasploitable/data_center/python/gacha.py",
+      "scripts/programs/suasploitable/data_center/python/identities.py",
       "scripts/programs/suasploitable/data_center/python/password.py",
       "scripts/programs/suasploitable/data_center/python/webserver.py",
 

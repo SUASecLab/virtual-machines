@@ -2,6 +2,7 @@
 
 from configuration import *
 import environment
+import identities
 import password
 import webserver
 
@@ -245,6 +246,64 @@ sudo -u www-data php /var/www/nextcloud/occ config:system:set trusted_domains 1 
 
     # Run DB postinstall script
     config = webserver.database_postinstall(config)
+
+
+
+
+# Generate identities
+config = identities.generate_identities(config)
+
+# Install Samba
+samba_flag = password.secure_password()
+config.flags.append(samba_flag)
+config.install_script += f"""
+apt -y install samba
+mkdir -p /srv/samba
+
+echo "{samba_flag}" >> /srv/samba/flag.txt
+
+cat > /tmp/smbconf << EOF
+
+[sambashare]
+    comment = Samba share
+    path = /srv/samba
+    read only = no
+    browsable = yes
+    writeable = yes
+EOF
+"""
+
+# Public share (40%)
+if config.gacha.pull(40, True):
+    config.conf_dict["samba"]["public"] = True
+    config.install_script += """
+echo "public = yes" >> /tmp/smbconf
+    """
+else:
+    # Generate list of valid SMB users
+    valid_users = ""
+    for user in config.conf_dict["identities"]:
+        # Generate password
+        config.install_script += f"""
+(echo "{user["password"]}"; echo "{user["password"]}") | smbpasswd -s -a {user["userName"]}
+        """
+
+        # Add to user list
+        if len(valid_users) == 0:
+            valid_users = user["userName"]
+        else:
+            valid_users += " "
+            valid_users += user["userName"]
+
+    config.install_script += f"""
+echo "valid users = {valid_users}" >> /tmp/smbconf
+    """
+    config.conf_dict["samba"]["public"] = False
+
+# Write samba configuration
+config.install_script += """
+cat /tmp/smbconf >> /etc/samba/smb.conf
+"""
 
 # Write configuration
 config.write_configuration()
