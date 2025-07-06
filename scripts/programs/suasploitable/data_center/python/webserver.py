@@ -40,15 +40,15 @@ apt-get install -y mariadb-server
         conf.conf_dict["database"]["application"] = "mariadb"
     else:
         conf.install_script += """
-wget -P /tmp https://repo.mysql.com//mysql-apt-config_0.8.30-1_all.deb
+wget -P /tmp https://repo.mysql.com/mysql-apt-config_0.8.33-1_all.deb
 dpkg -i /tmp/mysql-apt-config*.deb
 apt-get update
 apt-get install -y mysql-server
         """
         conf.conf_dict["database"]["application"] = "mysql"
     
-    # Run secure install script (80%)
-    if conf.gacha.pull(80):
+    # Run secure install script (80% mariadb, 100% mysql)
+    if conf.conf_dict["database"]["application"] == "mysql" or conf.gacha.pull(80):
         # Secure database
         conf.conf_dict["database"]["secure_install"] = True
 
@@ -60,18 +60,99 @@ apt-get install -y mysql-server
             conf.conf_dict["database"]["secure_root_password"] = False
             conf.conf_dict["database"]["root_password"] = password.insecure_password()
 
-        # Set passwords
-        conf.install_script += f"""
-mysql --user=root <<_EOF_
-UPDATE mysql.user SET Password=PASSWORD('{conf.conf_dict["database"]["root_password"]}') WHERE User='root';
-DELETE FROM mysql.user WHERE User='';
-DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1');
-DROP DATABASE IF EXISTS test;
-DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
-FLUSH PRIVILEGES;
-_EOF_
+        # Install expect program we use to secure the installation
+        conf.install_script += """
+apt-get -y install expect
         """
 
+        # Set passwords
+        if conf.conf_dict["database"]["application"] == "mariadb":
+            # MariaDB
+            conf.install_script += f"""
+cat > /tmp/sql_secure.sh <<EOF
+#!/usr/bin/expect -f
+
+set timeout 10
+set password ""
+set new_password "{conf.conf_dict["database"]["root_password"]}"
+
+spawn mysql_secure_installation
+
+expect "Enter current password for root (enter for none):"
+send "\$password\r"
+
+expect "Switch to unix_socket authentication"
+send "y\r"
+
+expect "Change the root password?"
+send "y\r"
+
+expect "New password:"
+send "$new_password\r"
+
+expect "Re-enter new password:"
+send "$new_password\r"
+
+expect "Remove anonymous users?"
+send "y\r"
+
+expect "Disallow root login remotely?"
+send "y\r"
+
+expect "Remove test database and access to it?"
+send "y\r"
+
+expect "Reload privilege tables now?"
+send "y\r"
+EOF
+
+
+chmod a+x /tmp/sql_secure.sh
+/tmp/sql_secure.sh
+            """
+        else:
+            conf.install_script += f"""
+cat > /etc/mysql/conf.d/enable-mysql-native-password.cnf <<EOF
+[mysqld]
+mysql_native_password=ON
+EOF
+
+systemctl restart mysql
+mysql -u root -pvagrant -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '{conf.conf_dict["database"]["root_password"]}';"
+
+cat > /tmp/sql_secure.sh <<EOF
+#!/usr/bin/expect -f
+
+set timeout 10
+set password "{conf.conf_dict["database"]["root_password"]}"
+
+spawn mysql_secure_installation
+
+expect "Enter password for user root: "
+send "\$password\r"
+
+expect "Press y|Y for Yes, any other key for No:"
+send "n\r"
+
+expect "Change the password for root"
+send "n\r"
+
+expect "Remove anonymous users?"
+send "y\r"
+
+expect "Disallow root login remotely?"
+send "y\r"
+
+expect "Remove test database and access to it?"
+send "y\r"
+
+expect "Reload privilege tables now?"
+send "y\r"
+EOF
+
+chmod a+x /tmp/sql_secure.sh
+/tmp/sql_secure.sh
+            """
     else:
         # Insecure database
         conf.conf_dict["database"]["secure_install"] = False
@@ -98,14 +179,26 @@ echo "bind-address = 0.0.0.0" >> /etc/mysql/mysql.conf.d/mysqld.cnf
 
             if conf.gacha.pull(25, True): # With permission granting option
                 conf.conf_dict["database"]["insecure_account"]["granting_option"] = True
-                conf.install_script += f"""
+                
+                if conf.conf_dict["database"]["application"] == "mysql":
+                    conf.install_script += f"""
+mysql -u root -p{conf.conf_dict["database"]["root_password"]} -e "CREATE USER '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%' IDENTIFIED BY '{conf.conf_dict["database"]["insecure_account"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+                    """
+                else:
+                    conf.install_script += f"""
 mysql -u root -e "CREATE USER '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%' IDENTIFIED BY '{conf.conf_dict["database"]["insecure_account"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;"
-                """
+                    """
             else:
                 conf.conf_dict["database"]["insecure_account"]["granting_option"] = False
-                conf.install_script += f"""
+
+                if conf.conf_dict["database"]["application"] == "mysql":
+                    conf.install_script += f"""
+mysql -u root -p{conf.conf_dict["database"]["root_password"]} -e "CREATE USER '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%' IDENTIFIED BY '{conf.conf_dict["database"]["insecure_account"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+                    """
+                else:
+                    conf.install_script += f"""
 mysql -u root -e "CREATE USER '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%' IDENTIFIED BY '{conf.conf_dict["database"]["insecure_account"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%'; FLUSH PRIVILEGES;"
-                """
+                    """
         else:
             conf.conf_dict["database"]["insecure_account"]["exists"] = False
 
@@ -122,7 +215,7 @@ def database_postinstall(conf: Configuration) -> Configuration:
     # Install dependencies and enable mysql
     conf.install_script += """
 apt-get install -y php-{mysql,cgi,curl,intl,json,mbstring,common,,mysqli,phpseclib}
-sed -i "s|;extension=mysqli|extension=mysqli|g" /etc/php/*/apache2/php.ini
+sed -i "s|;extension=mysqli|extension=mysqli|g" /etc/php/*/*/php.ini
     """
 
     # Get path of the webserver installation
@@ -134,7 +227,7 @@ if [ -d "/var/www/nextcloud" ]; then
 elif [ -d "/srv/wp" ]; then
     DB_WEB_TOOL_PATH="/srv/wp"
 elif [ -d "/srv/drupal" ]; then
-    DB_WEB_TOOL_PATH="/srv/drupal"
+    DB_WEB_TOOL_PATH="/srv/drupal/web"
 fi
     """
 

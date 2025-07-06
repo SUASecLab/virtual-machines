@@ -101,9 +101,14 @@ chown www-data:www-data /srv/drupal/web -R
     """
     
     # Create Drupal database
-    config.install_script += """
+    if config.conf_dict["database"]["application"] == "mysql":
+        config.install_script += f"""
+mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE DATABASE drupal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+        """
+    else:
+        config.install_script += """
 mysql -u root -e "CREATE DATABASE drupal CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
-    """
+        """
 
     # Set Drupal DB user credentials (insecure password: 30%)
     config.conf_dict["drupal"]["db"]["user"] = "vagrant"
@@ -118,14 +123,24 @@ mysql -u root -e "CREATE DATABASE drupal CHARACTER SET utf8mb4 COLLATE utf8mb4_u
  
     # Grant privileges on all databases (60%)
     if config.gacha.pull(60):
-        config.install_script += f"""
+        if config.conf_dict["database"]["application"] == "mysql":
+            config.install_script += f"""
+mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE USER '{config.conf_dict["drupal"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["drupal"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{config.conf_dict["drupal"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
+        """
+        else:
+            config.install_script += f"""
 mysql -u root -e "CREATE USER '{config.conf_dict["drupal"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["drupal"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{config.conf_dict["drupal"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
         """
-        config.conf_dict["drupal"]["db"]["privileges_on_all_dbs"] = True
+            config.conf_dict["drupal"]["db"]["privileges_on_all_dbs"] = True
     else:
-        config.install_script += f"""
+        if config.conf_dict["database"]["application"] == "mysql":
+            config.install_script += f"""
+mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE USER '{config.conf_dict["drupal"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["drupal"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON drupal.* TO '{config.conf_dict["drupal"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
+            """
+        else:
+            config.install_script += f"""
 mysql -u root -e "CREATE USER '{config.conf_dict["drupal"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["drupal"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON drupal.* TO '{config.conf_dict["drupal"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
-        """
+            """
         config.conf_dict["drupal"]["db"]["privileges_on_all_dbs"] = False
     
     # Set insecure admin password (30%)
@@ -236,9 +251,14 @@ sudo -u {config.conf_dict["wp"]["sys_user"]["username"]} wp core download --path
     """
 
     # Create database
-    config.install_script += """
+    if config.conf_dict["database"]["application"] == "mysql":
+            config.install_script += f"""
+mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE DATABASE wp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+            """
+    else:
+        config.install_script += """
 mysql -u root -e "CREATE DATABASE wp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
-    """
+        """
 
     config.conf_dict["wp"]["db"]["user"] = "wp"
 
@@ -252,14 +272,26 @@ mysql -u root -e "CREATE DATABASE wp CHARACTER SET utf8mb4 COLLATE utf8mb4_unico
 
     # Create database user with privileges on all DBs (60%)
     if config.gacha.pull(60):
-        config.install_script += f"""
+        if config.conf_dict["database"]["application"] == "mysql":
+            config.install_script += f"""
+mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE USER '{config.conf_dict["wp"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["wp"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{config.conf_dict["wp"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
+            """
+        else:
+            config.install_script += f"""
 mysql -u root -e "CREATE USER '{config.conf_dict["wp"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["wp"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{config.conf_dict["wp"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
-        """
+            """
+
         config.conf_dict["wp"]["db"]["privileges_on_all_dbs"] = True
     else:
-        config.install_script += f"""
-mysql -u root -e "CREATE USER '{config.conf_dict["wp"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["wp"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON drupal.* TO '{config.conf_dict["wp"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
-        """
+        if config.conf_dict["database"]["application"] == "mysql":
+            config.install_script += f"""
+mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE USER '{config.conf_dict["wp"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["wp"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON drupal.* TO '{config.conf_dict["wp"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
+            """
+        else:
+            config.install_script += f"""
+mysql -u root -e "CREATE USER '{config.conf_dict["wp"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["wp"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON wp.* TO '{config.conf_dict["wp"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
+            """
+
         config.conf_dict["wp"]["db"]["privileges_on_all_dbs"] = False
 
     # Create admin user, insecure password: 20%

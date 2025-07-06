@@ -165,9 +165,14 @@ apt-get install -y php-ctype php-curl php-dom php-fileinfo php-gd php-json php-m
     """
 
     # Create database
-    config.install_script += """
+    if config.conf_dict["database"]["application"] == "mysql":
+        config.install_script += f"""
+mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE DATABASE IF NOT EXISTS nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
+        """
+    else:
+        config.install_script += """
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS nextcloud CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
-    """
+        """
 
     # Password for Nextcloud DB user (insecure: 30%)
     if config.conf_dict["database"]["remote_connections_allowed"] \
@@ -180,14 +185,24 @@ mysql -u root -e "CREATE DATABASE IF NOT EXISTS nextcloud CHARACTER SET utf8mb4 
 
     # Grant privileges on all databases (60%)
     if config.gacha.pull(60):
-        config.install_script += f"""
+        if config.conf_dict["database"]["application"] == "mysql":
+            config.install_script += f"""
+mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE USER 'nextcloud'@'%' IDENTIFIED BY '{config.conf_dict["nextcloud"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO 'nextcloud'@'%'; FLUSH PRIVILEGES;"
+            """
+        else:
+            config.install_script += f"""
 mysql -u root -e "CREATE USER 'nextcloud'@'%' IDENTIFIED BY '{config.conf_dict["nextcloud"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO 'nextcloud'@'%'; FLUSH PRIVILEGES;"
-        """
+            """
         config.conf_dict["nextcloud"]["db"]["privileges_on_all_dbs"] = True
     else:
-        config.install_script += f"""
+        if config.conf_dict["database"]["application"] == "mysql":
+            config.install_script += f"""
+mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE USER 'nextcloud'@'%' IDENTIFIED BY '{config.conf_dict["nextcloud"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'%'; FLUSH PRIVILEGES;"
+            """
+        else:
+            config.install_script += f"""
 mysql -u root -e "CREATE USER 'nextcloud'@'%' IDENTIFIED BY '{config.conf_dict["nextcloud"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'%'; FLUSH PRIVILEGES;"
-        """
+            """
         config.conf_dict["nextcloud"]["db"]["privileges_on_all_dbs"] = False
 
     # Decide if Nextcloud user has insecure password (30% yes)
@@ -226,9 +241,9 @@ cd /var/www/nextcloud
 NEXTCLOUD_INSTALLED=$(sudo -u www-data php occ maintenance:install \
     --database "mysql" --database-name "nextcloud" --database-user "nextcloud" \
     --database-pass {config.conf_dict["nextcloud"]["db"]["password"]} --admin-user "admin" --admin-pass {config.conf_dict["nextcloud"]["password"]})
-if [[ $NEXTCLOUD_INSTALLED == *"Error"* ]]; then
+if [[ $NEXTCLOUD_INSTALLED != *"Nextcloud was successfully installed"* ]]; then
     # fix installation (sometimes, NC install sets db user wrong)
-    sudo -u www-data sed -i 's|oc_admin|nextcloud|g' /var/www/nextcloud/config/config.php
+    sudo -u www-data sed -i 's|oc_admin[0-9]*|nextcloud|g' /var/www/nextcloud/config/config.php
     sudo -u www-data php occ maintenance:install --database "mysql" --database-name "nextcloud" \
         --database-user "nextcloud" --database-pass {config.conf_dict["nextcloud"]["db"]["password"]} --admin-user "admin" --admin-pass {config.conf_dict["nextcloud"]["password"]}
 fi
