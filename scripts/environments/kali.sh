@@ -12,6 +12,9 @@ apt-get install lzop -y
 # Install fcrackzip
 sudo apt -y install fcrackzip dirsearch nuclei
 
+# Install thunderbird and filezilla
+sudo apt-get -y install thunderbird filezilla
+
 # Network
 mv /tmp/network.sh /opt/network.sh
 chmod a+x /opt/network.sh
