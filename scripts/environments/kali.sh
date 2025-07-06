@@ -10,10 +10,10 @@ EOF
 apt-get install lzop -y
 
 # Install fcrackzip
-sudo apt -y install fcrackzip dirsearch nuclei
+apt-get -y install fcrackzip dirsearch nuclei
 
-# Install thunderbird and filezilla
-sudo apt-get -y install thunderbird filezilla
+# Install thunderbird, filezilla and cifs-utils
+apt-get -y install thunderbird filezilla cifs-utils
 
 # Network
 mv /tmp/network.sh /opt/network.sh
