@@ -2,6 +2,8 @@
 
 from configuration import *
 import environment
+import identities
+import mail
 import password
 import random
 import webserver
@@ -285,7 +287,7 @@ mysql -u root -e "CREATE USER '{config.conf_dict["wp"]["db"]["user"]}'@'%' IDENT
     else:
         if config.conf_dict["database"]["application"] == "mysql":
             config.install_script += f"""
-mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE USER '{config.conf_dict["wp"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["wp"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON drupal.* TO '{config.conf_dict["wp"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
+mysql -u root -p{config.conf_dict["database"]["root_password"]} -e "CREATE USER '{config.conf_dict["wp"]["db"]["user"]}'@'%' IDENTIFIED BY '{config.conf_dict["wp"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON wp.* TO '{config.conf_dict["wp"]["db"]["user"]}'@'%'; FLUSH PRIVILEGES;"
             """
         else:
             config.install_script += f"""
@@ -326,5 +328,100 @@ chown www-data:www-data /srv/wp -R
 
     # Run DB postinstall script
     config = webserver.database_postinstall(config)
+
+# Generate identities
+config = identities.generate_identities(config)
+
+# Setup email server
+config.install_script += f"""
+debconf-set-selections <<< "postfix postfix/mailname string suaseclab.de"
+debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Localhost only'"
+apt-get -y install postfix
+apt-get -y install dovecot-pop3d dovecot-imapd
+postconf -e 'myhostname = suaseclab.de'
+systemctl reload postfix
+"""
+
+# Send mails
+config = mail.send_mail(config)
+
+# Allow everyone to see the mails (30%)
+if config.gacha.pull(30):
+    config.conf_dict["mail"]["777"] = True
+    config.install_script += """
+chmod 777 /var/mail
+    """
+else:
+    config.conf_dict["mail"]["777"] = False
+
+# Setup TLS 80%
+if not config.gacha.pull(20, True):
+    config.conf_dict["mail"]["TLS"] = True
+    config.install_script += """
+mkdir -p /etc/postfix/ssl
+cp /tmp/suaseclab.de.2048.crt /etc/postfix/ssl/suaseclab.crt
+cp /tmp/suaseclab.de.2048.key /etc/postfix/ssl/suaseclab.key
+cp /tmp/suasploitable_ca.crt /etc/postfix/ssl/ca.crt
+
+postconf -e 'smtpd_sasl_local_domain ='
+postconf -e 'smtpd_sasl_auth_enable = yes'
+postconf -e 'smtpd_sasl_security_options = noanonymous'
+postconf -e 'broken_sasl_auth_clients = yes'
+postconf -e 'smtpd_recipient_restrictions = permit_sasl_authenticated,permit_mynetworks,reject_unauth_destination'
+postconf -e 'inet_interfaces = all'
+postconf -e 'smtp_tls_security_level = may'
+postconf -e 'smtpd_tls_security_level = may'
+postconf -e 'smtpd_tls_auth_only = no'
+postconf -e 'smtp_tls_note_starttls_offer = yes'
+postconf -e 'smtpd_tls_key_file = /etc/postfix/ssl/suaseclab.key'
+postconf -e 'smtpd_tls_cert_file = /etc/postfix/ssl/suaseclab.crt'
+postconf -e 'smtpd_tls_CAfile = /etc/postfix/ssl/ca.crt'
+postconf -e 'smtpd_tls_loglevel = 1'
+postconf -e 'smtpd_tls_received_header = yes'
+postconf -e 'smtpd_tls_session_cache_timeout = 3600s'
+postconf -e 'tls_random_source = dev:/dev/urandom'
+postconf -e 'smtp_use_tls = yes' 
+
+echo "pwcheck_method: saslauthd" >> /etc/postfix/sasl/smtpd.conf
+echo "mech_list: plain login" >> /etc/postfix/sasl/smtpd.conf
+
+apt-get install libsasl2-2 sasl2-bin libsasl2-modules
+
+systemctl restart postfix saslauthd
+
+mv /etc/default/saslauthd /etc/default/saslauthd.bak
+
+cat >>/etc/default/saslauthd <<EOF
+DESC="SASL Authentication Daemon"
+NAME="saslauthd"
+MECHANISMS="pam"
+MECH_OPTIONS=""
+THREADS=5
+START=yes
+PWDIR="/var/spool/postfix/var/run/saslauthd"
+PARAMS="-m ${PWDIR}"
+PIDFILE="${PWDIR}/saslauthd.pid"
+OPTIONS="-c -m /var/spool/postfix/var/run/saslauthd"
+EOF
+ 
+ln -s /etc/default/saslauthd /etc/saslauthd
+systemctl start saslauthd
+"""
+else:
+    config.conf_dict["mail"]["TLS"] = False
+
+# Enforce encryption (80%)
+if config.conf_dict["mail"]["TLS"] == True and config.gacha.pull(80):
+    config.conf_dict["mail"]["TLS_enforced"] = True
+    config.install_script += """
+postconf -e 'smtpd_tls_security_level = encrypt' 
+postconf -e 'smtp_tls_security_level = encrypt' 
+postconf -e 'smtpd_enforce_tls = yes'
+
+sed -i 's|#submission inet n       -       y       -       -       smtpd|submission inet n       -       y       -       -       smtpd|g' /etc/postfix/master.cf
+    """
+else:
+    config.conf_dict["mail"]["TLS_enforced"] = False
+
 # Write configuration
 config.write_configuration()

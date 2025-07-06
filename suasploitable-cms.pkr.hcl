@@ -59,7 +59,10 @@ build {
       "scripts/programs/suasploitable/data_center/python/configuration.py",
       "scripts/programs/suasploitable/data_center/python/environment.py",
       "scripts/programs/suasploitable/data_center/python/gacha.py",
+      "scripts/programs/suasploitable/data_center/python/identities.py",
+      "scripts/programs/suasploitable/data_center/python/mail.py",
       "scripts/programs/suasploitable/data_center/python/password.py",
+      "scripts/programs/suasploitable/data_center/python/sendmail.py",
       "scripts/programs/suasploitable/data_center/python/webserver.py",
 
       # Configuration files for Drupal
@@ -79,6 +82,7 @@ build {
       "files/ca/suaseclab.de.2048.key",
       "files/ca/suaseclab.de.4096.crt",
       "files/ca/suaseclab.de.4096.key",
+      "files/ca/suasploitable_ca.crt",
 
       # Password list
       "files/500-worst-passwords.txt"
@@ -112,7 +116,7 @@ build {
   # Save configuration and flags
   provisioner "file" {
     sources = [
-      "/tmp/configuration.yaml",
+      "/tmp/configuration.json",
       "/tmp/install_script.sh",
       "/tmp/flags.txt"
     ]
