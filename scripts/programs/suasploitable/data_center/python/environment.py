@@ -115,7 +115,7 @@ systemctl enable containerd.service
         # Expose Docker TCP socket
         conf.install_script += """
 cat >> /etc/docker/daemon.json <<EOF
-echo  {"hosts": ["tcp://0.0.0.0:2375", "unix:///var/run/docker.sock"]}
+{"hosts": ["tcp://0.0.0.0:2375", "unix:///var/run/docker.sock"]}
 EOF
 
 mkdir -p /etc/systemd/system/docker.service.d/

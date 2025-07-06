@@ -181,12 +181,12 @@ mysql -u root -e "CREATE DATABASE IF NOT EXISTS nextcloud CHARACTER SET utf8mb4 
     # Grant privileges on all databases (60%)
     if config.gacha.pull(60):
         config.install_script += f"""
-mysql -u root -e "CREATE USER 'nextcloud'@'%' IDENTIFIED BY '{config.conf_dict["nextcloud"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO 'nextcloud'@'localhost'; FLUSH PRIVILEGES;"
+mysql -u root -e "CREATE USER 'nextcloud'@'%' IDENTIFIED BY '{config.conf_dict["nextcloud"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO 'nextcloud'@'%'; FLUSH PRIVILEGES;"
         """
         config.conf_dict["nextcloud"]["db"]["privileges_on_all_dbs"] = True
     else:
         config.install_script += f"""
-mysql -u root -e "CREATE USER 'nextcloud'@'localhost' IDENTIFIED BY '{config.conf_dict["nextcloud"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'localhost'; FLUSH PRIVILEGES;"
+mysql -u root -e "CREATE USER 'nextcloud'@'%' IDENTIFIED BY '{config.conf_dict["nextcloud"]["db"]["password"]}'; GRANT ALL PRIVILEGES ON nextcloud.* TO 'nextcloud'@'%'; FLUSH PRIVILEGES;"
         """
         config.conf_dict["nextcloud"]["db"]["privileges_on_all_dbs"] = False
 
@@ -247,9 +247,6 @@ sudo -u www-data php /var/www/nextcloud/occ config:system:set trusted_domains 1 
     # Run DB postinstall script
     config = webserver.database_postinstall(config)
 
-
-
-
 # Generate identities
 config = identities.generate_identities(config)
 
@@ -257,7 +254,7 @@ config = identities.generate_identities(config)
 samba_flag = password.secure_password()
 config.flags.append(samba_flag)
 config.install_script += f"""
-apt -y install samba
+apt-get -y install samba
 mkdir -p /srv/samba
 
 echo "{samba_flag}" >> /srv/samba/flag.txt
@@ -303,6 +300,119 @@ echo "valid users = {valid_users}" >> /tmp/smbconf
 # Write samba configuration
 config.install_script += """
 cat /tmp/smbconf >> /etc/samba/smb.conf
+"""
+
+config.conf_dict["ftp"]["server"] = "vsftpd" if config.gacha.pull(50) == True else "pureftpd"
+if config.conf_dict["ftp"]["server"] == "vsftpd":
+    # Install FTP server
+    config.install_script += """
+    apt-get -y install vsftpd
+    systemctl enable vsftpd
+    sed -i "s|listen=NO|listen=YES|g" /etc/vsftpd.conf
+    sed -i "s|listen_ipv6=YES|#listen_ipv6=NO|g" /etc/vsftpd.conf
+    """
+
+    # Enable write (75%)
+    if config.gacha.pull(75):
+        config.install_script += """
+    sed -i "s|#write_enable=YES|write_enable=YES|g" /etc/vsftpd.conf
+    """ 
+        config.conf_dict["ftp"]["write_enabled"] = True
+    else:
+        config.conf_dict["ftp"]["write_enabled"] = False
+
+    # Enable anonymous FTP (40%)
+    if config.gacha.pull(40):
+        config.install_script += """
+    sed -i "s|anonymous_enable=NO|anonymous_enable=YES|g" /etc/vsftpd.conf
+    """
+        config.conf_dict["ftp"]["anonymous"] = True
+
+        # Allow everyone to upload files (70%)
+        if config.gacha.pull(70):
+            config.install_script += """
+    sed -i "s|#anon_upload_enable=YES|anon_upload_enable=YES|g" /etc/vsftpd.conf
+    """
+            config.conf_dict["ftp"]["anonymous_upload"] = True
+        else:
+            config.conf_dict["ftp"]["anonymous_upload"] = False
+    else:
+        config.conf_dict["ftp"]["anonymous"] = False
+
+    # Chroot to local dir (10%)
+    if config.gacha.pull(90, True):
+        config.conf_dict["ftp"]["chroot_local_user"] = False
+    else:
+        config.install_script += """
+    sed -i "s|#chroot_local_user=YES|chroot_local_user=YES|g" /etc/vsftpd.conf
+    """
+        config.conf_dict["ftp"]["chroot_local_user"] = True
+
+else:
+    # Install old version with vulns (70%)
+    if config.gacha.pull(70):
+        config.conf_dict["ftp"]["version"] = "1.0.51"
+        config.install_script += """
+wget -P /tmp https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.51.tar.gz
+    """
+        config.flags.append("CVE‑2024‑48208")
+    else:
+        config.conf_dict["ftp"]["version"] = "1.0.52"
+        config.install_script += """
+wget -P /tmp https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.52.tar.gz
+    """
+
+    config.install_script += f"""
+tar xvf /tmp/pure-ftpd-{config.conf_dict["ftp"]["version"]}.tar.gz -C /tmp
+cd /tmp/pure-ftpd-{config.conf_dict["ftp"]["version"]}
+./configure
+make install-strip
+    """
+
+    # Generate options
+    options = ""
+    
+    # Enable anonymous FTP (40%)
+    if config.gacha.pull(75):
+        config.conf_dict["ftp"]["anonymous"] = True
+        options += "--anonymousonly"
+
+        # Allow everyone to upload files (30%)
+        if config.gacha.pull(30):
+            config.conf_dict["ftp"]["anonymous_write_enabled"] = True
+        else:
+            config.conf_dict["ftp"]["anonymous_write_enabled"] = False
+            options += " --anonymouscantupload"
+    else:
+        config.conf_dict["ftp"]["anonymous"] = False
+        options += "--noanonymous"
+        
+        # Chroot to local dir (10%, true)
+        if config.gacha.pull(10):
+            options += " --chrooteveryone"
+            config.conf_dict["ftp"]["chroot_local_user"] = True
+        else:
+            config.conf_dict["ftp"]["chroot_local_user"] = False
+
+
+    config.install_script += f"""
+    # Create systemd service
+cat >>/lib/systemd/system/pureftpd.service <<EOF
+[Unit]
+Description=FTP Server
+
+[Service]
+User=root
+Group=root
+ExecStart=/usr/local/sbin/pure-ftpd {options}
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl start pureftpd
+systemctl enable pureftpd
 """
 
 # Write configuration
