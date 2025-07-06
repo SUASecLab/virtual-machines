@@ -4,6 +4,8 @@
 cat >>/etc/sudoers.d/kali <<EOF
 laboratory laboratory = (root) NOPASSWD: /usr/bin/wireshark
 laboratory laboratory = (root) NOPASSWD: /usr/bin/msfdb
+laboratory laboratory = (root) NOPASSWD: /usr/bin/mount
+laboratory laboratory = (root) NOPASSWD: /usr/bin/umount
 EOF
 
 # Install lzop
