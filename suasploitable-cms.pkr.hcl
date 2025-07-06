@@ -84,6 +84,10 @@ build {
       "files/ca/suaseclab.de.4096.key",
       "files/ca/suasploitable_ca.crt",
 
+      # Joker
+      "files/joker.sh",
+      "files/ssh-betterdefaultpasslist.txt",
+
       # Password list
       "files/500-worst-passwords.txt"
     ]

@@ -80,6 +80,10 @@ build {
       "files/ca/suaseclab.de.4096.crt",
       "files/ca/suaseclab.de.4096.key",
 
+      # Joker
+      "files/joker.sh",
+      "files/ssh-betterdefaultpasslist.txt",
+
       # Password list
       "files/500-worst-passwords.txt"
     ]

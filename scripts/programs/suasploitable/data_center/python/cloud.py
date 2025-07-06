@@ -436,5 +436,8 @@ systemctl start pureftpd
 systemctl enable pureftpd
 """
 
+# Joker
+config = password.joker(config)
+
 # Write configuration
 config.write_configuration()

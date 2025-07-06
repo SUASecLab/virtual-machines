@@ -423,5 +423,8 @@ sed -i 's|#submission inet n       -       y       -       -       smtpd|submiss
 else:
     config.conf_dict["mail"]["TLS_enforced"] = False
 
+# Joker
+config = password.joker(config)
+
 # Write configuration
 config.write_configuration()
