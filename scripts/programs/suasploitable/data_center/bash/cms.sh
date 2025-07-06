@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Activate python venv
-source /tmp/venv/bin/activate
+# Set hostname
+echo "127.0.0.1       suaseclab.de" >> /etc/hosts
 
 # Make script executable
 chmod a+x /tmp/cms.py

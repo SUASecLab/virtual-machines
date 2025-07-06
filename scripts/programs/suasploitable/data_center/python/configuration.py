@@ -3,7 +3,7 @@
 from collections import defaultdict
 from dataclasses import dataclass
 from gacha import Gacha
-import yaml
+import json
 
 def convert_to_dict(d):
     if isinstance(d, defaultdict):
@@ -23,10 +23,10 @@ class Configuration():
         return defaultdict(self.nested_dict)
 
     def write_configuration(self):
-        with open("/tmp/configuration.yaml", "w") as configuration_file:
+        with open("/tmp/configuration.json", "w") as configuration_file:
             self.conf_dict["number_of_attack_paths"] = str(self.gacha.attack_paths)
-            self.yaml_dict = convert_to_dict(self.conf_dict)
-            yaml.safe_dump(self.yaml_dict, configuration_file, sort_keys=True)
+            self.json_dict = convert_to_dict(self.conf_dict)
+            json.dump(self.json_dict, configuration_file, indent=4)
             
         with open("/tmp/flags.txt", "w") as flags_file:
             flags_file.write('\n'.join(self.flags))

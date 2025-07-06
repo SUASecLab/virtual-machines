@@ -112,7 +112,7 @@ build {
   # Save configuration and flags
   provisioner "file" {
     sources = [
-      "/tmp/configuration.yaml",
+      "/tmp/configuration.json",
       "/tmp/install_script.sh",
       "/tmp/flags.txt"
     ]
