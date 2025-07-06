@@ -380,7 +380,7 @@ wget -P /tmp https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.
     config.install_script += f"""
 tar xvf /tmp/pure-ftpd-{config.conf_dict["ftp"]["version"]}.tar.gz -C /tmp
 cd /tmp/pure-ftpd-{config.conf_dict["ftp"]["version"]}
-./configure
+./configure --with-everything
 make install-strip
     """
 
@@ -392,6 +392,12 @@ make install-strip
         config.conf_dict["ftp"]["anonymous"] = True
         options += "--anonymousonly"
 
+        config.install_script += """
+mkdir -p /var/ftp
+useradd -d /var/ftp -s /sbin/nologin ftp
+chown ftp:ftp /var/ftp -R
+        """
+
         # Allow everyone to upload files (30%)
         if config.gacha.pull(30):
             config.conf_dict["ftp"]["anonymous_write_enabled"] = True
@@ -400,7 +406,7 @@ make install-strip
             options += " --anonymouscantupload"
     else:
         config.conf_dict["ftp"]["anonymous"] = False
-        options += "--noanonymous"
+        options += "-l unix --noanonymous"
         
         # Chroot to local dir (10%, true)
         if config.gacha.pull(10):
