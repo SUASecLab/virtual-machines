@@ -193,7 +193,7 @@ mysql -u root -e "CREATE USER '{conf.conf_dict["database"]["insecure_account"]["
 
                 if conf.conf_dict["database"]["application"] == "mysql":
                     conf.install_script += f"""
-mysql -u root -p{conf.conf_dict["database"]["root_password"]} -e "CREATE USER '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%' IDENTIFIED BY '{conf.conf_dict["database"]["insecure_account"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;"
+mysql -u root -p{conf.conf_dict["database"]["root_password"]} -e "CREATE USER '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%' IDENTIFIED BY '{conf.conf_dict["database"]["insecure_account"]["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{conf.conf_dict["database"]["insecure_account"]["username"]}'@'%'; FLUSH PRIVILEGES;"
                     """
                 else:
                     conf.install_script += f"""
