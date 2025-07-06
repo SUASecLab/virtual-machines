@@ -52,7 +52,7 @@ users = [
     {
         "firstName": "Martin",
         "lastName": "Kaufmann",
-        "userName": "dduerr"
+        "userName": "mkaufmann"
     },
     {
         "firstName": "Robert",
@@ -147,6 +147,29 @@ def generate_identities(conf) -> Configuration:
 useradd -m -d /home/{identity["userName"]} -s /bin/bash {identity["userName"]}
 echo '{identity["userName"]}:{identity["password"]}' | chpasswd
 """
+
+        # Create DB account if database is present
+        db_options = ""
+        if conf.conf_dict["database"]["application"] == "mysql" or conf.conf_dict["database"]["application"] == "mariadb":
+            identity["dbUserExists"] = True
+
+            if conf.gacha.pull(20): #With granting option (20%)
+                db_options = " WITH GRANT OPTION"
+                identity["dbWithGrantOption"] = True
+            else:
+                identity["dbWithGrantOption"] = False
+        else:
+            identity["dbUserExists"] = False
+
+
+        if conf.conf_dict["database"]["application"] == "mysql":
+            conf.install_script += f"""
+mysql -u root -p{conf.conf_dict["database"]["root_password"]} -e "CREATE USER '{identity["userName"]}'@'%' IDENTIFIED BY '{identity["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{identity["userName"]}'@'%' {db_options}; FLUSH PRIVILEGES;"
+            """
+        elif conf.conf_dict["database"]["application"] == "mariadb":
+            conf.install_script += f"""
+mysql -u root -e "CREATE USER '{identity["userName"]}'@'%' IDENTIFIED BY '{identity["password"]}'; GRANT ALL PRIVILEGES ON *.* TO '{identity["userName"]}'@'%' {db_options}; FLUSH PRIVILEGES;"
+            """
 
         if identity["root"] == True:
             conf.install_script += f"""
