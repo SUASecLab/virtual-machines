@@ -8,7 +8,7 @@ class Gacha:
         self.attack_paths = 0
 
     def pull(self, prob, isInitialAccess=False):
-        if isInitialAccess and self.pity >= 3:
+        if isInitialAccess and self.pity >= 2:
             self.pity = 0
             self.attack_paths += 1
             return True
