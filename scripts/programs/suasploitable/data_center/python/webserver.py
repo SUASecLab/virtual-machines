@@ -251,6 +251,28 @@ chown www-data:www-data $DB_WEB_TOOL_PATH/adminer.php
         """
     return conf
 
+
+def tls(conf: Configuration) -> Configuration:
+    # Create cert dir
+    conf.install_script += """
+mkdir -p /srv/certs
+    """
+    # 2048 bit: 65%, else 4096 bit
+    if conf.gacha.pull(65):
+        conf.conf_dict["tls"]["size"] = str(2048)
+        conf.install_script += """
+mv /tmp/suaseclab.de.2048.crt /srv/certs/cert.pem
+mv /tmp/suaseclab.de.2048.key /srv/certs/key.pem
+        """
+    else:
+        conf.conf_dict["tls"]["size"] = str(4096)
+        conf.install_script += """
+mv /tmp/suaseclab.de.4096.crt /srv/certs/cert.pem
+mv /tmp/suaseclab.de.4096.key /srv/certs/key.pem
+        """
+
+    return conf
+
 def lamp(conf: Configuration) -> Configuration:
     conf.conf_dict["webserver"]["stack"] = "LAMP"
     conf = apache(conf)

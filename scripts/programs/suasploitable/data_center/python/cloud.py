@@ -78,11 +78,9 @@ sed -i "s|SEAFILE_ADMIN_PASSWORD=asecret|SEAFILE_ADMIN_PASSWORD={config.conf_dic
     # Enable TLS (70%)
     if config.gacha.pull(70):
         config.conf_dict["web"]["tls"] = True
+        config = webserver.tls(config)
         
         config.install_script += """
-# Certificate handling
-bash /tmp/certs.sh
-
 # Adjust docker configuration
 sed -i 's|#- "443:443"|- "443:443"|g' docker-compose.yml
 sed -i "s|#- FORCE_HTTPS_IN_CONF=true|- FORCE_HTTPS_IN_CONF=true|g" docker-compose.yml
@@ -120,19 +118,15 @@ mkdir -p /var/www/nextcloud
         config.conf_dict["web"]["tls"] = True
         
         if config.conf_dict["webserver"]["stack"] == "LAMP":
+            config = webserver.tls(config)
             config.install_script += """
-# Certificate handling
-bash /tmp/certs.sh
-
 # Configure apache
 mv /tmp/nextcloud_apache_tls.conf /etc/apache2/sites-available/nextcloud-tls.conf
 a2ensite nextcloud-tls.conf
             """
         elif config.conf_dict["webserver"]["stack"] == "LEMP":
+            config = webserver.tls(config)
             config.install_script += """
-# Certificate handling
-bash /tmp/certs.sh
-
 # Configure nginx
 mv /tmp/nextcloud_nginx_tls.conf /etc/nginx/sites-available/nextcloud-tls
 ln -s /etc/nginx/sites-available/nextcloud-tls /etc/nginx/sites-enabled/nextcloud-tls

@@ -53,7 +53,6 @@ build {
   provisioner "file" {
     sources = [
       # Scripts called by other scripts or python
-      "scripts/programs/suasploitable/data_center/bash/certs.sh",
       "scripts/programs/suasploitable/data_center/python/cloud.py",
       "scripts/programs/suasploitable/data_center/python/configuration.py",
       "scripts/programs/suasploitable/data_center/python/environment.py",

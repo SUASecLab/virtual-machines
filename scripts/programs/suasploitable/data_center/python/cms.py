@@ -32,19 +32,15 @@ if config.conf_dict["cms_application"] == "drupal":
         config.conf_dict["web"]["tls"] = True
         
         if config.conf_dict["webserver"]["stack"] == "LAMP":
+            config = webserver.tls(config)
             config.install_script += """
-# Certificate handling
-bash /tmp/certs.sh
-
 # Configure apache
 mv /tmp/drupal_apache_tls.conf /etc/apache2/sites-available/drupal-tls.conf
 a2ensite drupal-tls.conf
             """
         elif config.conf_dict["webserver"]["stack"] == "LEMP":
+            config = webserver.tls(config)
             config.install_script += """
-# Certificate handling
-bash /tmp/certs.sh
-
 # Configure nginx
 mv /tmp/drupal_nginx_tls.conf /etc/nginx/sites-available/drupal-tls
 ln -s /etc/nginx/sites-available/drupal-tls /etc/nginx/sites-enabled/drupal-tls
@@ -177,19 +173,15 @@ else:
         config.conf_dict["web"]["tls"] = True
         
         if config.conf_dict["webserver"]["stack"] == "LAMP":
+            config = webserver.tls(config)
             config.install_script += """
-# Certificate handling
-bash /tmp/certs.sh
-
 # Configure apache
 mv /tmp/wp_apache_tls.conf /etc/apache2/sites-available/wp-tls.conf
 a2ensite wp-tls.conf
             """
         elif config.conf_dict["webserver"]["stack"] == "LEMP":
+            config = webserver.tls(config)
             config.install_script += """
-# Certificate handling
-bash /tmp/certs.sh
-
 # Configure nginx
 mv /tmp/wp_nginx_tls.conf /etc/nginx/sites-available/wp-tls
 ln -s /etc/nginx/sites-available/wp-tls /etc/nginx/sites-enabled/wp-tls
