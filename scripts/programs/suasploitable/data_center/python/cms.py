@@ -418,5 +418,8 @@ else:
 # Joker
 config = password.joker(config)
 
+# Change vagrant password
+config = environment.change_vagrant_password(config)
+
 # Write configuration
 config.write_configuration()

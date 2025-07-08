@@ -1,6 +1,7 @@
 #!/bin/env/python3
 
 from configuration import Configuration
+import os
 import password
 from random import randint
 
@@ -154,4 +155,8 @@ docker compose -f portainer.yml up -d
 
     # Append container name to flags
     conf.flags.append("portainer")
+    return conf
+
+def change_vagrant_password(conf: Configuration) -> Configuration:
+    conf.conf_dict["vagrant_password"] = os.environ["SSH_PASSWORD"]
     return conf

@@ -1,6 +1,6 @@
 variable "ssh_password" {
   type    = string
-  default = "vagrant"
+  default = "TH3P455W0RD"
 }
 
 variable "output_directory" {
@@ -100,7 +100,10 @@ build {
 
   # Install and set up programs
   provisioner "shell" {
-    environment_vars = ["DEBIAN_FRONTEND=noninteractive"]
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive",
+      "SSH_PASSWORD=${var.ssh_password}"
+    ]
     execute_command = "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
     scripts = [
       # Set up main system
