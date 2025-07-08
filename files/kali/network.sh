@@ -23,6 +23,9 @@ do
     elif [[ $line == *"basic."* ]]
     then
     	convert_line "$line" "basic.suaseclab.de"
+    elif [[ $line == *"dev."* ]]
+    then
+    	convert_line "$line" "dev.suaseclab.de"
     elif [[ $line == *"suaseclab."* ]]
     then
         convert_line "$line" "suaseclab.de"

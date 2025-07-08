@@ -1,4 +1,4 @@
-#/!bin/bash
+#!/bin/bash
 
 # Allow kali user to run wireshark and metasploitable
 cat >>/etc/sudoers.d/kali <<EOF
@@ -23,6 +23,15 @@ chmod a+x /opt/network.sh
 
 # Setup networking script
 (crontab -l 2>/dev/null; echo "* * * * * sudo bash /opt/network.sh") | crontab -
+
+# Create python venv
+apt-get install -y python3-pip python3-venv python-is-python3
+
+# Create and activate venv
+python -m venv /opt/venv
+echo "source /opt/venv/bin/activate" >> .zshrc
+source /opt/venv/bin/activate
+pip install mechanize requests
 
 ## Configure TCP client
 # Compile
