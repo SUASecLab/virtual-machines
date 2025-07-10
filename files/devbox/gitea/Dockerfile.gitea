@@ -1,0 +1,2 @@
+FROM docker.gitea.com/gitea:1.22.0-rootless
+COPY app.ini /etc/gitea/app.ini

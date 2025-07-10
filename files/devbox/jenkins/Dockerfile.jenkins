@@ -1,0 +1,7 @@
+FROM jenkins/jenkins:2.426.2-lts
+
+# Copy plugins (so that they are installed)
+COPY plugins /usr/share/jenkins/ref/plugins/
+
+# Copy initialization scripts
+COPY init_scripts /usr/share/jenkins/ref/init.groovy.d/

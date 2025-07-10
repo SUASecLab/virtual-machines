@@ -1,0 +1,124 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:${PORTAINER_VERSION}-alpine
+    container_name: portainer
+    restart: always
+    ports:
+      - 8000:8000
+      - 9443:9443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+  portainer_agent:
+    image: portainer/agent:${PORTAINER_VERSION}-alpine
+    container_name: portainer_agent
+    restart: always
+    ports:
+      - 9001:9001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/volumes:/var/lib/docker/volumes
+
+  rocketchat:
+    image: rocket.chat:${ROCKET_CHAT_VERSION}
+    container_name: rocket_chat
+    restart: always
+    environment:
+      RELEASE: ${ROCKET_CHAT_VERSION}
+      ROOT_URL: http://localhost:3000
+      PORT: 3000      
+      MONGO_URL: mongodb://mongodb:27017/rocketchat?replicaSet=rs0
+      ADMIN_USERNAME: ${ROCKET_CHAT_ADMIN_USERNAME}
+      ADMIN_PASS: ${ROCKET_CHAT_ADMIN_PASSSWORD}
+      ADMIN_EMAIL: admin@suaseclab.de
+      DEPLOY_METHOD: docker
+      OVERWRITE_SETTING_Accounts_SystemBlockedUsernameList: administrator,system,user
+      OVERWRITE_SETTING_Show_Setup_Wizard: never
+      OVERWRITE_SETTING_Organization_Type: community
+      OVERWRITE_SETTING_Organization_Name: SUASecLab
+      OVERWRITE_SETTING_Setup_Wizard: completed
+      OVERWRITE_SETTING_Accounts_TwoFactorAuthentication_Enabled: false
+    depends_on:
+      - mongodb
+    ports:
+      - 3000:3000
+
+  mongodb:
+    image: docker.io/bitnami/mongodb:6.0
+    container_name: mongodb
+    restart: always
+    volumes:
+      - mongodb_data:/bitnami/mongodb
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_INITIAL_PRIMARY_HOST: mongodb
+      MONGODB_INITIAL_PRIMARY_PORT_NUMBER: 27017
+      MONGODB_ADVERTISED_HOSTNAME: mongodb
+      MONGODB_ENABLE_JOURNAL: true
+      ALLOW_EMPTY_PASSWORD: yes
+
+  jenkins:
+    build: jenkins
+    container_name: jenkins
+    restart: always
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+
+  registry:
+    image: registry:2
+    container_name: registry
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry-data:/var/lib/registry
+
+  gitea:
+    build: gitea
+    container_name: gitea
+    restart: always
+    volumes:
+      - gitea-data:/var/lib/gitea
+      - gitea-config:/etc/gitea
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=mysql
+      - GITEA__database__HOST=db:3306
+      - GITEA__database__NAME=gitea
+      - GITEA__database__USER=gitea
+      - GITEA__database__PASSWD=gitea
+    ports:
+      - "80:80"
+      - "2222:2222"
+    depends_on:
+      - db
+    
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=gitea
+      - MYSQL_USER=gitea
+      - MYSQL_PASSWORD=gitea
+      - MYSQL_DATABASE=gitea
+    volumes:
+      - gitea-db:/var/lib/mysql
+
+volumes:
+  portainer_data:
+  mongodb_data:
+  jenkins_home:
+  gitea-config:
+  gitea-data:
+  gitea-db:
+  registry-data:

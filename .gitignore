@@ -6,6 +6,7 @@ build-kali
 build-suasploitable-basic
 build-suasploitable-cloud
 build-suasploitable-cms
+build-suasploitable-devbox
 
 # Downloaded dependency files
 dependencies

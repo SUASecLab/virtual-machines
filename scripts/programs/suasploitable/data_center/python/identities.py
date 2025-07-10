@@ -130,15 +130,22 @@ from configuration import Configuration
 import password
 from random import randint, sample
 
-def generate_identities(conf) -> Configuration:
+def generate_identities(conf, longPW=False) -> Configuration:
     identities = sample(users, randint(7, 13))
     for identity in identities:
         identity["root"] = True if conf.gacha.pull(20) else False
 
         # Generate password: Insecure: 15%
         if conf.gacha.pull(15, True):
-            identity["password"] = password.insecure_password()
-            conf.flags.append(identity["password"])
+            user_password = ""
+            if longPW == True:
+                while len(user_password) < 8:
+                    user_password = password.insecure_password()
+            else:
+                user_password = password.insecure_password()
+
+            identity["password"] = user_password
+            conf.flags.append(user_password)
         else:
             identity["password"] = password.secure_password()
 

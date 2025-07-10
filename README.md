@@ -43,6 +43,7 @@ Currently there are the following VMs available:
 | suasploitable-basic| suasploitable-basic.pkr.hcl | A very vulnerable VM used to teach ethical hacking|
 |suasploitable-cloud | suasploitable-cloud.pkr.hcl | A VM used to teach ethical hacking. Installs a cloud application (either Nextcloud or SeaFile, which one is deceided on randomly). Nextcloud randomly uses either Apache or NGINX as web server. Contains randomly selected security vulnerabilities.|
 |suasploitable-cms | suasploitable-cms.pkr.hcl | A VM used to teach ethical hacking. Installs a content management system. Either Drupal or Wordpress is installed randomly, using either Apache or NGINX as web server. Contains randomly selected security vulnerabilities.|
+|suasploitable-devbox | suasploitable-devbox.pkr.hcl | A VM used to teach ethical hacking. Installs services that can be used for CI/CD.|
 
 For building the exam machine, the `pushExam.sh` file in  the `files` directory must be replaced with the correct one:
 
