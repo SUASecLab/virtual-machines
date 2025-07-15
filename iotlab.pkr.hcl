@@ -91,6 +91,7 @@ build {
       # Create desktop entries
       "scripts/desktops/desktop-contiki.sh",
       "scripts/desktops/desktop-exercises.sh",
+      "scripts/desktops/desktop-resolution.sh",
       "scripts/desktops/desktop-filezilla.sh",
       "scripts/desktops/desktop-shell.sh",
 

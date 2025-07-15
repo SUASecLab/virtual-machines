@@ -95,6 +95,7 @@ build {
       # Create desktop entries
       "scripts/desktops/desktop-heaven-base.sh",
       "scripts/desktops/desktop-shell.sh",
+      "scripts/desktops/desktop-resolution.sh",
 
       # Finalise
       "scripts/environments/exam.sh",

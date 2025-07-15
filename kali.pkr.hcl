@@ -93,6 +93,7 @@ build {
 
       # Create desktop entries
       "scripts/desktops/desktop-exercises.sh",
+      "scripts/desktops/desktop-resolution.sh",
 
       # Hide CTF flags
       "scripts/environments/kali_ctf.sh",
