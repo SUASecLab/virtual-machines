@@ -23,8 +23,6 @@ if __name__ == "__main__":
     result = set()
     result.update(readFile("bash", "build-kali/flags.txt"))
     result.update(readFile("suasploitable", "build-suasploitable-basic/flags.txt"))
-    result.update(readFile("suasploitable", "build-suasploitable-cloud/flags.txt"))
-    result.update(readFile("suasploitable", "build-suasploitable-cms/flags.txt"))
     result = list(result)
     result.sort()
     print(result)
