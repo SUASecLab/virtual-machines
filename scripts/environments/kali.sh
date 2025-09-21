@@ -11,8 +11,8 @@ EOF
 # Install lzop
 apt-get install lzop -y
 
-# Install fcrackzip
-apt-get -y install fcrackzip dirsearch nuclei
+# Install additional tools
+apt-get -y install fcrackzip dirsearch nuclei feroxbuster
 
 # Install thunderbird, filezilla and cifs-utils
 apt-get -y install thunderbird filezilla cifs-utils
