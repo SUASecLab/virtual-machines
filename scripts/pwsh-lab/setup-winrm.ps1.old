@@ -1,0 +1,63 @@
+# script/setup-winrm.ps1
+# Configure WinRM pour Packer (HTTP/5985)
+# Log file
+$Log = 'C:\Windows\Temp\packer_winrm.log'
+"[$(Get-Date -Format s)] --- setup-winrm.ps1 start ---" | Out-File -FilePath $Log -Encoding UTF8 -Append
+
+# Exiger l'élévation
+$wid = [Security.Principal.WindowsIdentity]::GetCurrent()
+$pr  = New-Object Security.Principal.WindowsPrincipal($wid)
+if (-not $pr.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+  "[$(Get-Date -Format s)] Not elevated, abort." | Out-File $Log -Append
+  exit 1
+}
+
+try {
+  # 1) Réseau en Private (sinon QuickConfig échoue à cause du firewall)
+  Get-NetConnectionProfile -ErrorAction SilentlyContinue | ForEach-Object {
+    if ($_.NetworkCategory -ne 'Private') {
+      "[$(Get-Date -Format s)] Set network '$($_.Name)' to Private" | Out-File $Log -Append
+      Set-NetConnectionProfile -InterfaceIndex $_.InterfaceIndex -NetworkCategory Private -ErrorAction SilentlyContinue
+    }
+  }
+
+  # 2) Activer WinRM (idempotent)
+  "[$(Get-Date -Format s)] winrm quickconfig -q" | Out-File $Log -Append
+  winrm quickconfig -q | Out-Null
+
+  # 3) Autoriser Basic + non chiffré (Packer)
+  "[$(Get-Date -Format s)] AllowUnencrypted/Basic" | Out-File $Log -Append
+  winrm set winrm/config/service '@{AllowUnencrypted="true"}'  | Out-Null
+  winrm set winrm/config/service/auth '@{Basic="true"}'         | Out-Null
+
+  # 4) TrustedHosts (facilite la connexion packer locale)
+  "[$(Get-Date -Format s)] TrustedHosts *" | Out-File $Log -Append
+  winrm set winrm/config/client '@{TrustedHosts="*"}' | Out-Null
+
+  # 5) Pare-feu 5985
+  "[$(Get-Date -Format s)] Enable firewall rules for WinRM" | Out-File $Log -Append
+  try {
+    Enable-NetFirewallRule -DisplayGroup "Windows Remote Management" -ErrorAction Stop | Out-Null
+  } catch {
+    # fallback si le groupe n'existe pas
+    if (-not (Get-NetFirewallRule -DisplayName "WinRM 5985" -ErrorAction SilentlyContinue)) {
+      New-NetFirewallRule -DisplayName "WinRM 5985" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 5985 | Out-Null
+    }
+  }
+
+  # 6) Service WinRM en auto + démarrage
+  "[$(Get-Date -Format s)] Set-Service WinRM Automatic + Start" | Out-File $Log -Append
+  Set-Service -Name WinRM -StartupType Automatic
+  Start-Service -Name WinRM
+
+  # 7) Vérification
+  $ok = Test-NetConnection -ComputerName 127.0.0.1 -Port 5985 -InformationLevel Quiet
+  "[$(Get-Date -Format s)] Port 5985 listening: $ok" | Out-File $Log -Append
+
+  "[$(Get-Date -Format s)] --- setup-winrm.ps1 end (OK) ---" | Out-File $Log -Append
+  exit 0
+}
+catch {
+  "[$(Get-Date -Format s)] ERROR: $_" | Out-File $Log -Append
+  exit 1
+}
