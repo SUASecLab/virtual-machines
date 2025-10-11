@@ -4,7 +4,7 @@
   <!-- ===== Pass 1: windowsPE ===== -->
   <settings pass="windowsPE">
 
-    <!-- Langue / clavier pendant WinPE -->
+    <!-- Language / keyboard during  WinPE -->
     <component name="Microsoft-Windows-International-Core-WinPE"
                processorArchitecture="amd64"
                publicKeyToken="31bf3856ad364e35"
@@ -13,13 +13,13 @@
       <SetupUILanguage>
         <UILanguage>en-US</UILanguage>
       </SetupUILanguage>
-      <InputLocale>040C:0000040C</InputLocale>  <!-- clavier FR -->
+      <InputLocale>040C:0000040C</InputLocale>  <!-- keyboard  FR -->
       <SystemLocale>fr-FR</SystemLocale>
       <UILanguage>en-US</UILanguage>
       <UserLocale>fr-FR</UserLocale>
     </component>
 
-    <!-- Partitionnement BIOS/MBR : 500 Mo + C: (reste) -->
+    <!-- Partition BIOS/MBR : 500 Mo + C: (reste) -->
     <component name="Microsoft-Windows-Setup"
                processorArchitecture="amd64"
                publicKeyToken="31bf3856ad364e35"
@@ -80,7 +80,7 @@
         </OSImage>
       </ImageInstall>
 
-      <!-- Clé générique Win10 Pro pour passer l’étape Product Key (pas une activation) -->
+      <!-- generic key  Win10 Pro to pass  Product Ke step -->
       <UserData>
         <ProductKey>
           <Key>VK7JG-NPHTM-C97JM-9MPGT-3V66T</Key>
@@ -138,7 +138,7 @@
         <SkipUserOOBE>true</SkipUserOOBE>
       </OOBE>
 
-      <!-- Mot de passe Administrateur -->
+      <!--  Administrator Password -->
       <UserAccounts>
         <AdministratorPassword>
           <Value>P@ssw0rd123!</Value>
@@ -146,7 +146,7 @@
         </AdministratorPassword>
       </UserAccounts>
 
-      <!-- Auto-login pour laisser s’exécuter les scripts -->
+      <!-- Auto-login to execute  scripts -->
       <AutoLogon>
         <Username>Administrator</Username>
         <Enabled>true</Enabled>
@@ -157,7 +157,7 @@
         <LogonCount>3</LogonCount>
       </AutoLogon>
 
-      <!-- Lancement WinRM + tes flags depuis A:\script\ -->
+      <!--  WinRM +  flags from  A:\PWSH-LAB -->
       <FirstLogonCommands>
         <SynchronousCommand wcm:action="add" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
           <Order>1</Order>

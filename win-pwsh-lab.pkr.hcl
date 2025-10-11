@@ -12,12 +12,14 @@ packer {
 # =======================
 variable "iso_url" {
   type    = string
+# change the path to your ISO file
   default = "/home/romain1/Downloads/Win10_22H2_English_x64v1.iso"
 }
 
 variable "iso_checksum" {
   type    = string
-  default = "none" # mets la vraie somme si tu veux
+# you can let the checksum to default ="none" or the true one
+  default = "none" 
 }
 
 variable "vm_name" {
@@ -25,6 +27,7 @@ variable "vm_name" {
   default = "windows_pwsh_lab.qcow2"
 }
 
+# you can change the variables to yours 
 variable "disk_size" {
   type    = string
   default = "40G"
@@ -59,19 +62,19 @@ source "qemu" "winlab" {
   iso_url      = var.iso_url
   iso_checksum = var.iso_checksum
 
-  # Sortie disque
+  # Disk Output
   output_directory = "build"
   vm_name          = var.vm_name
   format           = "qcow2"
   disk_size        = var.disk_size
-  disk_interface   = "ide"     # simple, pas de pilotes VirtIO
+  disk_interface   = "ide"
   accelerator      = "kvm"
 
-  # Matériel
+  # Materiel
   cpus   = var.cpus
   memory = var.memory
 
-  # Réseau: NAT par défaut (pas de qemuargs foireux)
+  # Network :default = "NAT"
   net_device = "e1000"
 
   # VNC
@@ -81,7 +84,7 @@ source "qemu" "winlab" {
   vnc_port_min     = var.vnc_port
   vnc_port_max     = var.vnc_port
 
-  # Lecteur A:\ (floppy) -> ton XML + tout le dossier script/
+  # Disk  A:\ (floppy) ->  XML (http/Autounattend.xml) + directory (script/pwsh-lab)
   floppy_files = ["http/Autounattend.xml"]
   floppy_dirs  = ["scripts/pwsh-lab"]
 
@@ -102,10 +105,10 @@ build {
   name    = "windows-powershell-lab"
   sources = ["source.qemu.winlab"]
 
-  # Petit test côté invité quand WinRM répond
+  # check  WinRM répond
   provisioner "powershell" {
     inline = [
-      "Write-Host 'WinRM OK depuis Packer'; New-Item -Path C:\\ -Name __packer_ok.txt -ItemType File -Force | Out-Null"
+      "Write-Host 'WinRM OK from  Packer'; New-Item -Path C:\\ -Name __packer_ok.txt -ItemType File -Force | Out-Null"
     ]
   }
 }
