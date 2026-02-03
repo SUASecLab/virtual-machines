@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ $# -le 1 ]; then
+	cat << EOF
+Must specify a password to change to
+EOF
+	exit 0	
+fi
+
 # Change pw in preseeds
 sed -i "s|TH3P455W0RD|${1}|g" http/kali-preseed.cfg
 sed -i "s|TH3P455W0RD|${1}|g" http/debian-preseed.cfg
