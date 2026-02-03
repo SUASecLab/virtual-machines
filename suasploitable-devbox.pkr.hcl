@@ -5,7 +5,7 @@ variable "ssh_password" {
 
 variable "output_directory" {
   type    = string
-  default = "build-suasploitable-devbox"
+  default = "DEVBOX_OUTPUT_DIR"
 }
 
 # Some sources:
@@ -14,7 +14,7 @@ variable "output_directory" {
 source "qemu" "suasploitable-devbox" {
   iso_url          = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.11.0-amd64-netinst.iso"
   iso_checksum     = "30ca12a15cae6a1033e03ad59eb7f66a6d5a258dcf27acd115c2bd42d22640e8"
-  output_directory = "build-suasploitable-devbox"
+  output_directory = "${var.output_directory}"
   shutdown_command = "echo '${var.ssh_password}'  | sudo -S /sbin/shutdown -hP now"
   disk_size        = "40G"
   format           = "qcow2"

@@ -5,7 +5,7 @@ variable "ssh_password" {
 
 variable "output_directory" {
   type    = string
-  default = "build-suasploitable-cms"
+  default = "CMS_OUTPUT_DIR"
 }
 
 # Some sources:

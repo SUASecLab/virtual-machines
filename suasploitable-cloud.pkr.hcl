@@ -5,7 +5,7 @@ variable "ssh_password" {
 
 variable "output_directory" {
   type    = string
-  default = "build-suasploitable-cloud"
+  default = "CLOUD_OUTPUT_DIR"
 }
 
 # Some sources:
