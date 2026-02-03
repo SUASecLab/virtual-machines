@@ -45,7 +45,7 @@ services:
       - 3000:3000
 
   mongodb:
-    image: docker.io/bitnami/mongodb:6.0
+    image: docker.io/bitnami/mongodb:latest
     container_name: mongodb
     restart: always
     volumes:
