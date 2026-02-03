@@ -7,6 +7,9 @@ build-suasploitable-basic
 build-suasploitable-cloud
 build-suasploitable-cms
 build-suasploitable-devbox
+CLOUD_OUTPUT_DIR
+CMS_OUTPUT_DIR
+DEVBOX_OUTPUT_DIR
 
 # Downloaded dependency files
 dependencies
