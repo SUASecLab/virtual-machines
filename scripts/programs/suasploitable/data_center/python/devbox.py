@@ -164,27 +164,44 @@ docker compose -f docker-compose.yml up -d
 
 # Add postinstall script
 config.install_script += f"""
-#(crontab -l 2>/dev/null; echo "@reboot bash /srv/postinstall.sh") | crontab -
+cat > /etc/systemd/system/postinstall.service <<EOF
+[Unit]
+Description=Postinstall script
+[Service]
+Type=simple
+ExecStart=/srv/postinstall.sh
+[Install]
+WantedBy=multi-user.target
+EOF
+
 cat > /srv/postinstall.sh <<EOF
 #!/bin/bash
 
-# sleep 60
-source /opt/venv/bin/activate
-docker exec -it gitea /app/gitea/gitea admin user create --username root --password {config.conf_dict["gitea"]["admin_password"]} --email admin@suaseclab.de --admin --config /etc/gitea/app.ini /bin/bash
+sleep 60
+docker exec gitea /app/gitea/gitea admin user create --username root --password {config.conf_dict["gitea"]["admin_password"]} --email admin@suaseclab.de --admin --config /etc/gitea/app.ini /bin/bash
 sleep 5
 
+source /opt/venv/bin/activate
 cd /srv
 python /srv/gitea_setup.py
 python /srv/jenkins_setup.py
 python /srv/rocket_chat_setup.py
 
 deactivate
-# rm -rf /opt/venv
+systemctl disable postinstall.service
 
-# rm /srv/*.py
-# rm /srv/*.json
-# rm /srv/postinstall.sh
+rm -rf /opt/venv
+rm /srv/*.py
+rm /srv/*.json
+rm -rf /srv/__pycache__
+rm /srv/postinstall.sh
+
+wait 5
+reboot now
 EOF
+
+chmod +x /srv/postinstall.sh
+systemctl enable postinstall.service
 """
 
 # Configure GiTea
@@ -202,7 +219,7 @@ if not config.gacha.pull(40, True):
     config.conf_dict["gitea"]["registration_enabled"] = True
 else:
     config.install_script += """
-echo "docker exec -it gitea /bin/sed -i 's|DISABLE_REGISTRATION = false|DISABLE_REGISTRATION = true|g' /etc/gitea/app.ini" >> /srv/postinstall.sh
+echo "docker exec gitea /bin/sed -i 's|DISABLE_REGISTRATION = false|DISABLE_REGISTRATION = true|g' /etc/gitea/app.ini" >> /srv/postinstall.sh
 echo "docker restart gitea" >> /srv/postinstall.sh
 """
     config.conf_dict["gitea"]["registration_enabled"] = False
