@@ -160,6 +160,40 @@ cd $DEVBOX_DIR
 docker compose -f docker-compose.yml up -d
 """
 
+# Add patched services
+config.install_script += """
+cd /srv
+# Fixed services
+wget https://ftp.drupal.org/files/projects/drupal-10.6.2.tar.gz
+wget https://wordpress.org/latest.zip -O wordpress-latest.zip
+wget https://download.nextcloud.com/server/releases/latest.zip -O nextcloud-latest.zip
+wget https://download.pureftpd.org/pub/pure-ftpd/releases/pure-ftpd-1.0.53.tar.gz
+
+# Populate local registry
+docker pull seafileltd/seafile-mc:13.0-latest
+docker tag seafileltd/seafile-mc:13.0-latest localhost:5000/seafileltd/seafile-mc:13.0-latest
+docker push localhost:5000/seafileltd/seafile-mc:13.0-latest
+
+docker pull portainer/portainer-ce:alpine-sts
+docker tag portainer/portainer-ce:alpine-sts localhost:5000/portainer/portainer-ce:alpine-sts
+docker push localhost:5000/portainer/portainer-ce:alpine-sts
+
+docker pull portainer/agent:alpine-sts
+docker tag portainer/agent:alpine-sts localhost:5000/portainer/agent:alpine-sts
+docker push localhost:5000/portainer/agent:alpine-sts
+
+docker pull rocket.chat:latest
+docker tag rocket.chat:latest localhost:5000/rocket.chat:latest
+docker push localhost:5000/rocket.chat:latest
+
+docker pull jenkins/jenkins:latest
+docker tag jenkins/jenkins:latest localhost:5000/jenkins/jenkins:latest
+docker push localhost:5000/jenkins/jenkins:latest
+
+docker pull gitea/gitea:latest
+docker tag gitea/gitea:latest localhost:5000/gitea/gitea:latest
+docker push localhost:5000/gitea/gitea:latest
+"""
 # Configure services
 
 # Add postinstall script
