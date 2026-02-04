@@ -558,7 +558,7 @@ cat > $DEVBOX_DIR/vm.xml << EOF
     </controller>
     <interface type="network">
       <mac address="52:54:00:73:1c:${2}"/>
-      <source network="hacking${2}"/>
+      <source network="default"/>
       <model type="virtio"/>
       <driver iommu="off"/>
       <link state="up"/>
