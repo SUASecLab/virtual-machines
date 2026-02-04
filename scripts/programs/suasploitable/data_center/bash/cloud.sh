@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Set hostname
+echo "127.0.0.1       cloud.suaseclab.de" >> /etc/hosts
+
 # Add joker
 cp /tmp/joker.sh /opt
 chmod 777 /opt/joker.sh

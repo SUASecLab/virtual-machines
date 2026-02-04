@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set hostname
-echo "127.0.0.1       suaseclab.de" >> /etc/hosts
+echo "127.0.0.1       dev.suaseclab.de" >> /etc/hosts
 
 # Add joker
 cp /tmp/joker.sh /opt
