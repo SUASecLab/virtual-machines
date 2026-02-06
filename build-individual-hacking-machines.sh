@@ -15,16 +15,6 @@ EOF
 	exit 0
 fi
 
-# Reset everything
-git reset --hard
-rm -rf build-suasploitable-cloud build-suasploitable-cms build-suasploitable-devbox
-
-# Download dependencies if not available
-bash download-dependencies.sh
-
-# Change passwords for non-hacking machines (not relevant here, so we just create a random password)
-bash change_password.sh
-
 # Change output dir paths
 BASIC_DIR=${1}/basic
 CMS_DIR=${1}/cms
@@ -114,8 +104,8 @@ cat > $BASIC_DIR/vm.xml << EOF
 <domain type="kvm">
   <name>suasploitable${2}-basic</name>
   <uuid>d59e6e2b-86ed-42b5-9556-761a281270${2}</uuid>
-  <memory unit="KiB">1048576</memory>
-  <currentMemory unit="KiB">1048576</currentMemory>
+  <memory unit="KiB">2097152</memory>
+  <currentMemory unit="KiB">2097152</currentMemory>
   <vcpu placement="static">1</vcpu>
   <os>
     <type arch="x86_64" machine="pc-q35-9.1">hvm</type>
@@ -234,8 +224,8 @@ cat > $CLOUD_DIR/vm.xml << EOF
 <domain type="kvm">
   <name>suasploitable${2}-cloud</name>
   <uuid>d59e6e2b-86ed-42b5-9556-7614286271${2}</uuid>
-  <memory unit="KiB">1048576</memory>
-  <currentMemory unit="KiB">1048576</currentMemory>
+  <memory unit="KiB">2097152</memory>
+  <currentMemory unit="KiB">2097152</currentMemory>
   <vcpu placement="static">1</vcpu>
   <os>
     <type arch="x86_64" machine="pc-q35-9.1">hvm</type>
@@ -354,8 +344,8 @@ cat > $CMS_DIR/vm.xml << EOF
 <domain type="kvm">
   <name>suasploitable${2}-cms</name>
   <uuid>d59e6e2b-86ed-42b5-9576-7614286272${2}</uuid>
-  <memory unit="KiB">1048576</memory>
-  <currentMemory unit="KiB">1048576</currentMemory>
+  <memory unit="KiB">2097152</memory>
+  <currentMemory unit="KiB">2097152</currentMemory>
   <vcpu placement="static">1</vcpu>
   <os>
     <type arch="x86_64" machine="pc-q35-9.1">hvm</type>
@@ -474,8 +464,8 @@ cat > $DEVBOX_DIR/vm.xml << EOF
 <domain type="kvm">
   <name>suasploitable${2}-devbox</name>
   <uuid>d59e6e2b-54ed-42b5-9556-761a281272${2}</uuid>
-  <memory unit="KiB">4194304</memory>
-  <currentMemory unit="KiB">4194304</currentMemory>
+  <memory unit="KiB">8388608</memory>
+  <currentMemory unit="KiB">8388608</currentMemory>
   <vcpu placement="static">1</vcpu>
   <os>
     <type arch="x86_64" machine="pc-q35-9.1">hvm</type>
@@ -599,8 +589,8 @@ cat > $KALI_DIR/vm.xml << EOF
       <libosinfo:os id="http://libosinfo.org/linux/2020"/>
     </libosinfo:libosinfo>
   </metadata>
-  <memory unit="KiB">4194304</memory>
-  <currentMemory unit="KiB">4194304</currentMemory>
+  <memory unit="KiB">8388608</memory>
+  <currentMemory unit="KiB">8388608</currentMemory>
   <vcpu placement="static">2</vcpu>
   <os>
     <type arch="x86_64" machine="pc-q35-9.1">hvm</type>
