@@ -1,13 +1,16 @@
 #!/bin/bash
 
-if [ $# -le 4 ]; then
+if [ $# -le 7 ]; then
 	cat << EOF
 Parameters:
 1. Main directory
 2. Running number
 3. VNC port (kali)
-4. VNC password
-5. Shared directory (kali)
+4. VNC port (cloud)
+5. VNC port (cms)
+6. VNC port (devbox)
+7. VNC password
+8. Shared directory (kali)
 EOF
 	exit 0
 fi
@@ -36,34 +39,31 @@ sed -i "s|DEVBOX_OUTPUT_DIR|$DEVBOX_DIR|g" suasploitable-devbox.pkr.hcl
 # Build kali if not existant
 if [ ! -f  build-kali/kali_base.qcow2 ]; then
     echo "Building Kali VM"
-    packer build kali.pkr.hcl &
+    packer build kali.pkr.hcl
 else
     echo "Copying Kali VM"
     mkdir -p $KALI_DIR
-    cp build-kali/* $KALI_DIR -r &
+    cp build-kali/* $KALI_DIR -r
 fi
 
 # Build basic if not existant
 if [ ! -f  build-suasploitable-basic/suasploitable_basic.qcow2 ]; then
     echo "Building Basic VM"
-    packer suasploitable-basic.pkr.hcl &
+    packer suasploitable-basic.pkr.hcl
 else
     echo "Copying Basic VM"
     mkdir -p $BASIC_DIR
-    cp build-suasploitable-basic/* $BASIC_DIR -r &
+    cp build-suasploitable-basic/* $BASIC_DIR -r
 fi
 
 # Build cloud machine
-packer build suasploitable-cloud.pkr.hcl &
+packer build suasploitable-cloud.pkr.hcl
 
 # Build cms
-packer build suasploitable-cms.pkr.hcl &
+packer build suasploitable-cms.pkr.hcl
 
 # Build devbox
-packer build suasploitable-devbox.pkr.hcl &
-
-# Wait until finish
-wait
+packer build suasploitable-devbox.pkr.hcl
 
 echo "Built machines"
 
@@ -335,8 +335,8 @@ cat > $CLOUD_DIR/vm.xml << EOF
     </console>
     <input type="mouse" bus="ps2"/>
     <input type="keyboard" bus="ps2"/>
-    <graphics type="vnc" port="-1" autoport="yes">
-      <listen type="address"/>
+    <graphics type="vnc" port="${4}" autoport="no" listen="0.0.0.0" passwd="${7}">
+      <listen type="address" address="0.0.0.0"/>
     </graphics>
     <video>
       <model type="cirrus" vram="16384" heads="1" primary="yes"/>
@@ -455,8 +455,8 @@ cat > $CMS_DIR/vm.xml << EOF
     </console>
     <input type="mouse" bus="ps2"/>
     <input type="keyboard" bus="ps2"/>
-    <graphics type="vnc" port="-1" autoport="yes">
-      <listen type="address"/>
+    <graphics type="vnc" port="${5}" autoport="no" listen="0.0.0.0" passwd="${7}">
+      <listen type="address" address="0.0.0.0"/>
     </graphics>
     <video>
       <model type="cirrus" vram="16384" heads="1" primary="yes"/>
@@ -575,8 +575,8 @@ cat > $DEVBOX_DIR/vm.xml << EOF
     </console>
     <input type="mouse" bus="ps2"/>
     <input type="keyboard" bus="ps2"/>
-    <graphics type="vnc" port="-1" autoport="yes">
-      <listen type="address"/>
+    <graphics type="vnc" port="${6}" autoport="no" listen="0.0.0.0" passwd="${7}">
+      <listen type="address" address="0.0.0.0"/>
     </graphics>
     <video>
       <model type="cirrus" vram="16384" heads="1" primary="yes"/>
@@ -720,7 +720,7 @@ cat > $KALI_DIR/vm.xml << EOF
       <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
     </controller>
     <filesystem type="mount" accessmode="passthrough">
-      <source dir="${5}"/>
+      <source dir="${8}"/>
       <target dir="share"/>
       <readonly/>
       <address type="pci" domain="0x0000" bus="0x07" slot="0x00" function="0x0"/>
@@ -748,7 +748,7 @@ cat > $KALI_DIR/vm.xml << EOF
     </input>
     <input type="mouse" bus="ps2"/>
     <input type="keyboard" bus="ps2"/>
-    <graphics type="vnc" port="${3}" autoport="no" listen="0.0.0.0" passwd="${4}">
+    <graphics type="vnc" port="${3}" autoport="no" listen="0.0.0.0" passwd="${7}">
       <listen type="address" address="0.0.0.0"/>
     </graphics>
     <video>
@@ -768,23 +768,28 @@ EOF
 
 # Start vms
 cd $BASIC_DIR
-sudo virsh create vm.xml
+sudo virsh define vm.xml
+sudo virsh start suasploitable${2}-basic
 cd $BASIC_DIR
 
 cd $CLOUD_DIR
-sudo virsh create vm.xml
+sudo virsh define vm.xml
+sudo virsh start suasploitable${2}-cloud
 cd $CUR_DIR
 
 cd $CMS_DIR
-sudo virsh create vm.xml
+sudo virsh define vm.xml
+sudo virsh start suasploitable${2}-cms
 cd $CUR_DIR
 
 cd $DEVBOX_DIR
-sudo virsh create vm.xml
+sudo virsh define vm.xml
+sudo virsh start suasploitable${2}-devbox
 cd $CUR_DIR
 
 cd $KALI_DIR
-sudo virsh create vm.xml
+sudo virsh define vm.xml
+sudo virsh start kali${2}
 cd $KALI_DIR
 
 echo "Started VMs"
