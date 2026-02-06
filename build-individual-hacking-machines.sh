@@ -39,7 +39,7 @@ fi
 # Build basic if not existant
 if [ ! -f  build-suasploitable-basic/suasploitable_basic.qcow2 ]; then
     echo "Building Basic VM"
-    packer suasploitable-basic.pkr.hcl
+    packer build suasploitable-basic.pkr.hcl
 else
     echo "Copying Basic VM"
     mkdir -p $BASIC_DIR
