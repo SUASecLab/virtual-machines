@@ -30,21 +30,19 @@ sed -i "s|DEVBOX_OUTPUT_DIR|$DEVBOX_DIR|g" suasploitable-devbox.pkr.hcl
 if [ ! -f  build-kali/kali_base.qcow2 ]; then
     echo "Building Kali VM"
     packer build kali.pkr.hcl
-else
-    echo "Copying Kali VM"
-    mkdir -p $KALI_DIR
-    cp build-kali/* $KALI_DIR -r
 fi
+echo "Copying Kali VM"
+mkdir -p $KALI_DIR
+cp build-kali/* $KALI_DIR -r
 
 # Build basic if not existant
 if [ ! -f  build-suasploitable-basic/suasploitable_basic.qcow2 ]; then
     echo "Building Basic VM"
     packer build suasploitable-basic.pkr.hcl
-else
-    echo "Copying Basic VM"
-    mkdir -p $BASIC_DIR
-    cp build-suasploitable-basic/* $BASIC_DIR -r
 fi
+echo "Copying Basic VM"
+mkdir -p $BASIC_DIR
+cp build-suasploitable-basic/* $BASIC_DIR -r
 
 # Build cloud machine
 packer build suasploitable-cloud.pkr.hcl
