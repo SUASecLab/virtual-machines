@@ -24,7 +24,10 @@ import os
 
 # Get all directories
 directories = os.listdir()
-directories.remove(".git")
+
+if ".git" in directories:
+    directories.remove(".git")
+    
 directories.remove("generate_queries.py")
 if "db_statements.txt" in directories:
     directories.remove("db_statements.txt")
