@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $# -le 1 ]; then
+if [ $# -le 0 ]; then
 	cat << EOF
 Must specify a password to change to
 EOF
