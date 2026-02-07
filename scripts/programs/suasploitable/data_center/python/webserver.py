@@ -40,7 +40,7 @@ apt-get install -y mariadb-server
         conf.conf_dict["database"]["application"] = "mariadb"
     else:
         conf.install_script += """
-wget -P /tmp https://repo.mysql.com/mysql-apt-config_0.8.33-1_all.deb
+wget -P /tmp https://repo.mysql.com//mysql-apt-config_0.8.36-1_all.deb
 dpkg -i /tmp/mysql-apt-config*.deb
 apt-get update
 apt-get install -y mysql-server
