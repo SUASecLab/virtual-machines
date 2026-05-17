@@ -1,6 +1,6 @@
 variable "ssh_password" {
   type    = string
-  default = "TH3P455W0RD"
+  default = "vagrant"
 }
 
 variable "output_directory" {

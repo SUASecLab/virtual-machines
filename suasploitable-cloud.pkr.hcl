@@ -36,7 +36,7 @@ source "qemu" "suasploitable-cloud" {
   headless         = "true"
   boot_command = [
     "<down><tab>",
-    "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/suasploitable-basic-preseed.cfg ",
+    "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/suasploitable-exam-preseed.cfg ",
     "language=en locale=de_DE.UTF-8 ",
     "country=DE keymap=de ",
     "hostname=debian domain=example.com ",
