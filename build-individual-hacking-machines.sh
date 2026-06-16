@@ -587,8 +587,8 @@ cat > $KALI_DIR/vm.xml << EOF
       <libosinfo:os id="http://libosinfo.org/linux/2020"/>
     </libosinfo:libosinfo>
   </metadata>
-  <memory unit="KiB">8388608</memory>
-  <currentMemory unit="KiB">8388608</currentMemory>
+  <memory unit="KiB">4194304</memory>
+  <currentMemory unit="KiB">4194304</currentMemory>
   <vcpu placement="static">2</vcpu>
   <os>
     <type arch="x86_64" machine="pc-q35-9.1">hvm</type>
