@@ -7,8 +7,8 @@ variable "ssh_password" {
 # https://github.com/multani/packer-qemu-debian/tree/master
 
 source "qemu" "iot-base" {
-  iso_url          = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.11.0-amd64-netinst.iso"
-  iso_checksum     = "30ca12a15cae6a1033e03ad59eb7f66a6d5a258dcf27acd115c2bd42d22640e8"
+  iso_url          = "https://cdimage.debian.org/mirror/cdimage/archive/12.14.0/amd64/iso-cd/debian-12.14.0-amd64-netinst.iso"
+  iso_checksum     = "adfcbb50782af99d457467f9b38c9e0fb3b1b6e211e0202f099aa58874b3f923"
   output_directory = "build-iotlab"
   shutdown_command = "echo '${var.ssh_password}'  | sudo -S /sbin/shutdown -hP now"
   disk_size        = "40G"
